@@ -1,0 +1,132 @@
+﻿@using SonodaSoftware.Data
+@model User_UserBase
+@{
+    ViewData["Title"] = "Login";
+    Layout = "LayoutLogin";
+    var text = ViewData["message"];
+    var textLogin = ViewData["ErrorLogin"] as string;
+}
+<style>
+    .cardDesign {
+        position: absolute;
+        top: 10%;
+        left: 15%;
+        right: 15%;
+        bottom: 15%;
+    }
+</style>
+
+<div class="card yCard">
+    <!-- English language-->
+    <div class="card-body row p-4">
+        <div class="col-md-6 d-block align-content-center" style="background-color: #cfd0d9;">
+            @* <img src="~/img/sonoda/SONODA1_PNG.png" class="img-fluid" /> *@
+            <img src="~/img/sonoda1_png.png" class="img-fluid" />
+        </div>
+        <div class="col-md-6 d-flex justify-content-center" style="position:relative;">
+            <div class="form-check form-switch" style="position:absolute;top:1%;right:3%;">
+                <input class="form-check-input" type="checkbox" id="SwitchCheck" onclick="checkBarcode()">
+                <label class="form-check-label" id="labelSwitchCheck">TurnOn Barcode Mode</label>
+            </div>
+            <div class="my-4 d-block align-content-center text-center px-4 ms-0 me-0 p-0">
+                <form id="Login" method="post" action="/Login/LoginByUser">
+                    <input id="user" asp-for="Username" name="Username" class="my-2" /><br />
+                    <input id="pass" asp-for="Password" name="Password" type="password" class="my-2" /><br />
+                    <button id="buttonLogin" type="submit" class="my-2 btn btn-outline-secondary">Login</button>
+                    <label>@textLogin</label>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Thai language-->
+    @*<div id="Thai" class="card-body row p-4">
+    <div class="col-md-6 d-block align-content-center" style="background-color: #cfd0d9;">
+    <img src="~/img/sonoda/SONODA1_PNG.png" class="img-fluid" />
+    </div>
+    <div class="col-md-6 d-flex justify-content-center" style="position:relative;">
+    <div class="form-check form-switch" style="position:absolute;top:1%;right:3%;">
+    <input class="form-check-input" type="checkbox" id="SwitchCheck">
+    <label class="form-check-label">ล็อคอินโหมดบาร์โค้ด</label>
+    </div>
+    <div class="my-4 d-block align-content-center text-center px-4 ms-0 me-0 p-0">
+    <label class="h1 fw-bold my-2">Sonoda Stock</label><br />
+    <input id="user" name="username" class="my-2" /><br />
+    <input id="pass" name="password" type="password" class="my-2" placeholder="รหัสผ่าน" /><br />
+    <button class="my-2 btn btn-outline-secondary">ล็อคอิน</button>
+    </div>
+    </div>
+    </div>*@
+    <div style="position:absolute;bottom:1%;right:2%;">
+        <a onclick="changelanguage('Thai')">ไทย</a> |
+        <a onclick="changelanguage('English')">English</a> |
+        <a onclick="changelanguage('Japanese')">日本語</a>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+    <script>
+        var user = "user";
+        var pass = "pass";
+        var Barcode = "Barcode";
+        // $("#Thai").hide();
+        // var language = sessionStorage.getItem("language");
+        // if (language != null) {
+        //     changelanguage(language);
+        // }
+        // else {
+        //     changelanguage('English');
+        // }
+        // function changelanguage(lang) {
+        //     if (lang == 'Thai') {
+        //         $("#labelSwitchCheck").html("ล็อคอินโหมดบาร์โค้ด");
+        //         $("#buttonLogin").html("ล๊อคอิน");
+        //         user = "ชื่อผู้ใช้";
+        //         pass = "รหัสผ่าน";
+        //         Barcode = "บาร์โค๊ด";
+        //     } else if (lang == 'English') {
+        //         $("#labelSwitchCheck").html("TurnOn Barcode Mode");
+        //         $("#buttonLogin").html("Login");
+        //         user = "user";
+        //         pass = "pass";
+        //         Barcode = "Barcode";
+        //     } else if (lang == 'Japanese') {
+        //         $("#labelSwitchCheck").html("バーコードモードログイン");
+        //         $("#buttonLogin").html("ログイン");
+        //         user = "ユーザー名";
+        //         pass = "パスワード";
+        //         Barcode = "バーコード";
+        //     }
+        //     checkBarcode();
+        //     sessionStorage.clear();
+        //     sessionStorage.setItem("language", lang);
+        // }
+        $("#user").attr("placeholder", user);
+        $("#pass").attr("placeholder", pass);
+        $("#Login").attr('action', '/Login/LoginByUser');
+        function checkBarcode() {
+            var check = document.getElementById("SwitchCheck");
+            if (check.checked) {
+                $("#pass").hide();
+                $("#user").attr("placeholder", "Barcode");
+                $("#Login").attr('action', '/Home/LoginBarCode');
+            } else {
+                $("#pass").show();
+                $("#user").attr("placeholder", "user");
+                $("#pass").attr("placeholder", "pass");
+                $("#Login").attr('action', '/Login/LoginByUser');  // ใช้ LoginByUser
+            }
+        }
+
+        if ('@text' != "") {
+            alert('@text');
+        }
+
+        function loginclick() {
+            $("#Login").submit();
+        }
+    </script>
+}

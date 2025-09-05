@@ -1,0 +1,105 @@
+﻿@model DetailForReturn
+@{
+    ViewData["Title"] = "Return";
+    ViewData["activeReturn"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var detail = ViewData["detail"] as List<DetailForReturn>;
+}
+
+<div class="card">
+    <div class="card-header">
+        <label class="h4">คืนอุปกรณ์</label>
+    </div>
+    <div class="row card-body">
+        <div class="col-12 col-md-7">
+            <table id="BorrowTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th hidden>BorrowId</th>
+                        <th hidden>DetailId</th>
+                        <th>Job</th>
+                        <th>Tool</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (detail != null)
+                    {
+                        foreach (var item in detail)
+                        {
+                            <tr>
+                                <td>@item.Date</td>
+                                <td hidden>@item.BorrowId</td>
+                                <td hidden>@item.DetailId</td>
+                                <td>@item.Job</td>
+                                <td>@item.Tool</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Unit</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 col-md-5">
+            <form id="return">
+                <div class="card card-body">
+                    <label>Date</label>
+                    <input id="date" class="form-control" type="text" asp-for="Date" readonly />
+                    <input hidden id="borrowID" asp-for="BorrowId" readonly />
+                    <input hidden id="detailID" asp-for="DetailId" readonly />
+                    <label>Job</label>
+                    <input id="job" class="form-control" asp-for="Job" readonly />
+                    <label>Tool</label>
+                    <input id="tool" class="form-control" asp-for="Tool" readonly />
+                    <label>Quantity</label>
+                    <input id="quantity" class="form-control" asp-for="Quantity" readonly />
+                    <label>Unit</label>
+                    <input id="unit" class="form-control" asp-for="Unit" readonly />
+                    <button class="btn btn-outline-secondary my-3" id="returnBtn">คืนอุปกรณ์</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var table = $("#BorrowTable").DataTable({
+            scrollX: true,
+            autoWidth: false
+        });
+
+        $('#BorrowTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            var dateStamp = $(this).find('td:first-child').html();
+            $("#date").val($(this).find('td:first-child').html());
+            $("#borrowID").val($(this).find('td:nth-child(2)').html());
+            $("#detailID").val($(this).find('td:nth-child(3)').html());
+            $("#job").val($(this).find('td:nth-child(4)').html());
+            $("#tool").val($(this).find('td:nth-child(5)').html());
+            $("#quantity").val($(this).find('td:nth-child(6)').html());
+            $("#unit").val($(this).find('td:nth-child(7)').html());
+        });
+
+        $("#returnBtn").click(function () {
+            $("#return").attr('action', '/Tool/returnsave');
+            $("#return").submit();
+        });
+        // function editTool(mode) {
+        //     $("#Edit").attr('action', '/home/' + mode);
+        //     $("#Edit").submit();
+        // }
+
+
+    </script>
+}
+

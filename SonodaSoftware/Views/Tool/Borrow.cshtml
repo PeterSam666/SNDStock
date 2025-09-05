@@ -1,0 +1,263 @@
+﻿@using SonodaSoftware.Data
+@model List<Tool_BorrowDetail>
+@{
+    ViewData["Title"] = "Borrow";
+    ViewData["activeBorrow"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var tool = ViewData["tool"] as List<Tool>;
+    var checkBorrow = ViewData["checkBorrow"] as List<Tool>;
+    var BorrowItem = Json.Serialize(checkBorrow);
+    var filedNumber = (checkBorrow != null) ? checkBorrow.Count():1;
+    var checkNull = (checkBorrow != null) ?1 : 0;
+}
+
+<form id="Detail">
+    <div class="card cardData mx-4">
+        <div class="card-header">
+            <h5>ยืมอุปกรณ์</h5>
+        </div>
+        <div class="mx-md-5 card-body">
+            <div class="mt-4">
+                <h5 class="my-3 w-100">งาน : <input name="Job" required/></h5>
+                <h5 class="my-3 w-100">ID พนักงานที่ยืม : <input name="UserBorrow" required/></h5>
+                <h5 class="my-3 w-100">จำนวนอุปกรณ์ : <input id="numberField" type="number" min="1" max="5" value="@filedNumber" /> อย่าง</h5>
+                <div id="budgetDetail">
+                    <div id="fieldData1" class="card my-2" style="background-color:#e7e7e7;">
+                        <h5 class="w-100 mt-4 mb-3 mx-3">
+                            อุปกรณ์ : @Html.DropDownListFor(
+                            model => model[0].Tool,
+                            new SelectList(
+                            new List<SelectListItem>
+                            {
+                            new SelectListItem { Text = " ", Value = "" }
+                            }.Concat(tool.Select(t => new SelectListItem { Text = t.Name_ENG, Value = t.ID.ToString() })),
+                            "Value",
+                            "Text"
+                            ),
+                            new { @onchange = "unitAuto('1', this.value)", @class = "form-select w-auto mt-2" })
+                        </h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวนในสต๊อก  <label id="QuantityShow1"></label>  <label id="Unit1"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">เลื่อนเพื่อเลือกจำนวน : 0 @Html.EditorFor(model => model[0].Quantity, new { htmlAttributes = new { @type = "range", @min = "0", @id = "maxquantity1", @onchange = "setvalue('1',this.value)" } }) <label id="Quantity1"></label> ยืมจำนวน  =  <label id="value1"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">Location :  <label id="location1"></label></h5>
+                        <!-- เพิ่มส่วนสำหรับแสดงรูป -->
+                        <div class="mx-3">
+                            <img id="image1" src="~/img/default.png" alt="Tool Image" style="width:100px; height:100px; display:none;">
+                        </div>
+                    </div>
+                    <div id="fieldData2" class="card my-2" style="background-color:#e7e7e7;">
+                        <h5 class="w-100 mt-4 mb-3 mx-3">
+                            อุปกรณ์ : @Html.DropDownListFor(
+                            model => model[1].Tool,
+                            new SelectList(
+                            new List<SelectListItem>
+                            {
+                            new SelectListItem { Text = " ", Value = "" }
+                            }.Concat(tool.Select(t => new SelectListItem { Text = t.Name_ENG, Value = t.ID.ToString() })),
+                            "Value",
+                            "Text"
+                            ),
+                            new { @onchange = "unitAuto('2', this.value)", @class = "form-select w-auto mt-2" })
+                        </h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวนในสต๊อก  <label id="QuantityShow2"></label>  <label id="Unit2"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">เลื่อนเพื่อเลือกจำนวน : 0 @Html.EditorFor(model => model[1].Quantity, new { htmlAttributes = new { @type = "range", @min = "0", @id = "maxquantity2", @onchange = "setvalue('2',this.value)" } }) <label id="Quantity2"></label> ยืมจำนวน =  <label id="value2"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">Location :  <label id="location2"></label></h5>
+                        <!-- เพิ่มส่วนสำหรับแสดงรูป -->
+                        <div class="mx-3">
+                            <img id="image2" src="~/img/default.png" alt="Tool Image" style="width:100px; height:100px; display:none;">
+                        </div>
+                    </div>
+                    <div id="fieldData3" class="card my-2" style="background-color:#e7e7e7;">
+                        <h5 class="w-100 mt-4 mb-3 mx-3">
+                            อุปกรณ์ : @Html.DropDownListFor(
+                            model => model[2].Tool,
+                            new SelectList(
+                            new List<SelectListItem>
+                            {
+                            new SelectListItem { Text = " ", Value = "" }
+                            }.Concat(tool.Select(t => new SelectListItem { Text = t.Name_ENG, Value = t.ID.ToString() })),
+                            "Value",
+                            "Text"
+                            ),
+                            new { @onchange = "unitAuto('3', this.value)" })
+                        </h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวนในสต๊อก  <label id="QuantityShow3"></label>  <label id="Unit3"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวน  : 0 @Html.EditorFor(model => model[2].Quantity, new { htmlAttributes = new { @type = "range", @min = "0", @id = "maxquantity3", @onchange = "setvalue('3',this.value)" } }) <label id="Quantity3"></label> Value =  <label id="value3"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">Location :  <label id="location3"></label></h5>
+                        <!-- เพิ่มส่วนสำหรับแสดงรูป -->
+                        <div class="mx-3">
+                            <img id="image3" src="~/img/default.png" alt="Tool Image" style="width:100px; height:100px; display:none;">
+                        </div>
+                    </div>
+                    <div id="fieldData4" class="card my-2" style="background-color:#e7e7e7;">
+                        <h5 class="w-100 mt-4 mb-3 mx-3">
+                            อุปกรณ์ : @Html.DropDownListFor(
+                            model => model[3].Tool,
+                            new SelectList(
+                            new List<SelectListItem>
+                            {
+                            new SelectListItem { Text = " ", Value = "" }
+                            }.Concat(tool.Select(t => new SelectListItem { Text = t.Name_ENG, Value = t.ID.ToString() })),
+                            "Value",
+                            "Text"
+                            ),
+                            new { @onchange = "unitAuto('4', this.value)" })
+                        </h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวนในสต๊อก  <label id="QuantityShow4"></label>  <label id="Unit4"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวน : 0 @Html.EditorFor(model => model[3].Quantity, new { htmlAttributes = new { @type = "range", @min = "0", @id = "maxquantity4", @onchange = "setvalue('4',this.value)" } }) <label id="Quantity4"></label> Value =  <label id="value4"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">Location :  <label id="location4"></label></h5>
+                        <!-- เพิ่มส่วนสำหรับแสดงรูป -->
+                        <div class="mx-3">
+                            <img id="image4" src="~/img/default.png" alt="Tool Image" style="width:100px; height:100px; display:none;">
+                        </div>
+                    </div>
+                    <div id="fieldData5" class="card my-2" style="background-color:#e7e7e7;">
+                        <h5 class="w-100 mt-4 mb-3 mx-3">
+                            อุปกรณ์ : @Html.DropDownListFor(
+                            model => model[4].Tool,
+                            new SelectList(
+                            new List<SelectListItem>
+                            {
+                            new SelectListItem { Text = " ", Value = "" }
+                            }.Concat(tool.Select(t => new SelectListItem { Text = t.Name_ENG, Value = t.ID.ToString() })),
+                            "Value",
+                            "Text"
+                            ),
+                            new { @onchange = "unitAuto('5', this.value)" })
+                        </h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวนในสต๊อก  <label id="QuantityShow5"></label>  <label id="Unit5"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">จำนวน : 0 @Html.EditorFor(model => model[4].Quantity, new { htmlAttributes = new { @type = "range", @min = "0", @id = "maxquantity5", @onchange = "setvalue('5',this.value)" } }) <label id="Quantity5"></label> Value =  <label id="value5"></label></h5>
+                        <h5 class="w-100 mb-3 mx-3">Location :  <label id="location5"></label></h5>
+                        <!-- เพิ่มส่วนสำหรับแสดงรูป -->
+                        <div class="mx-3">
+                            <img id="image5" src="~/img/default.png" alt="Tool Image" style="width:100px; height:100px; display:none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    @* <button id="backButton" class="btn btn-secondary my-4 me-3 " style="font-size:20px;"> ย้อนกลับ/Back </button> *@
+                    <button id="nextButton" class="btn btn-secondary my-4 ms-3 " style="font-size:20px;"> บันทึก </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+            
+        if ("@TempData["result"]" != "") {
+            document.addEventListener("DOMContentLoaded", function () {
+                var message = "@TempData["result"]";
+
+                // แสดง alert
+                alert(`${message}`);
+            });
+        }
+        $("#fieldData1").show();
+        $("#fieldData2").hide();
+        $("#fieldData3").hide();
+        $("#fieldData4").hide();
+        $("#fieldData5").hide();
+        $("#fieldData1").find('input').each(function () {
+            $(this).attr('required', true)
+        });
+        $("#reamrk1").removeAttr('required', true)
+        $("#reamrk2").removeAttr('required', true)
+        $("#reamrk3").removeAttr('required', true)
+        $("#reamrk4").removeAttr('required', true)
+        $("#reamrk5").removeAttr('required', true)
+
+        $("#nextButton").click(function () {
+            $('#Detail').attr('action', '/Tool/BorrowDetailSave');
+        });
+        $("#numberField").change(function () {
+            var numberfield = $(this).val();
+            openfiled(numberfield);
+        });
+
+        function openfiled(n) {
+            for (let i = 1; i <= 5; i++) {
+                if (i <= n) {
+                    $(`#fieldData${i}`).show().find('input').attr('required', true);
+                } else {
+                    $(`#fieldData${i}`).hide().find('input').removeAttr('required');
+                }
+            }
+        }
+
+
+        function unitAuto(field, name) {
+            var listTool = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["tool"]));
+
+            // ค้นหาตาม ID ที่ตรงกัน
+            for (var i = 0; i < listTool.length; i++) {
+                if (`${listTool[i].ID}` === name) {
+                    var UNIT = listTool[i].Unit;
+                    var QUANTITY = listTool[i].Quantity;
+                    var LOCATION = listTool[i].Location;
+                    var PICTURE = `/imgtool/${listTool[i].Picture}`;
+
+                    // อัปเดตค่าที่เกี่ยวข้องใน HTML
+                    $(`#Unit${field}`).html(`(${UNIT})`);
+                    $(`#Quantity${field}`).html(QUANTITY);
+                    $(`#QuantityShow${field}`).html(QUANTITY);
+                    $(`#location${field}`).html(LOCATION);
+                    $(`#maxquantity${field}`).attr({
+                        "max": QUANTITY
+                    });
+
+                    // อัปเดตรูปภาพ
+                    var imageElement = $(`#image${field}`);
+                    imageElement.attr("src", PICTURE);
+                    imageElement.show(); // แสดงรูปภาพ
+                }
+            }
+        }
+
+        // ฟังก์ชันเพื่อค้นหาและเลือกข้อมูลจาก listSelectTool
+        function findAndSelect(field, tool) {
+            
+                // ค้นหาตามชื่อ Name_ENG ใน dropdown
+                var dropdown = $(`#fieldData${field} select`);
+                dropdown.find('option').each(function () {
+                    if ($(this).text().trim() === tool.name_ENG) {
+                        $(this).prop('selected', true); // ทำการเลือก
+                    unitAuto(`${field}`, `${(tool.id)}`); // เรียก unitAuto พร้อม ID
+                    }
+                });
+        }
+
+
+
+        function setvalue(field, value) {
+            if (field == 1) {
+                $("#value1").html(value);
+            }
+            else if (field == 2) {
+                $("#value2").html(value);
+            }
+            else if (field == 3) {
+                $("#value3").html(value);
+            }
+            else if (field == 4) {
+                $("#value4").html(value);
+            }
+            else if (field == 5) {
+                $("#value5").html(value);
+            }
+        }
+        var field = @filedNumber ; // กำหนดค่าเริ่มต้นของ field
+        openfiled(field) // เรียกใช้ฟังก์ชัน openField พร้อมค่า field
+        var checkNull = @checkNull ;
+        var listSelectTool = @BorrowItem ;
+        if (checkNull == 1) {
+            for (var i = 1; i <= field; i++) {
+                findAndSelect(i, listSelectTool[i-1]); // อัพเดต dropdown และข้อมูลอัตโนมัติ
+            }
+
+        }
+
+    </script>
+}
+

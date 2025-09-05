@@ -1,0 +1,224 @@
+﻿@using SonodaSoftware.Data
+@model User_UserBase
+@{
+    ViewData["Title"] = "ADDUser";
+    ViewData["activeEditUser"] = "active";
+    ViewData["activeUsermanage"] = "active";
+    ViewData["openUser"] = "menu-open";
+}
+
+<div class="card mt-3">
+    <div class="card-header">
+        <label class="h3">ADDUser</label>
+    </div>
+    <div class="card-body">
+        <div id="AddUser" class="row">
+            <div class="col-md-7 col-12 h-100">
+                <div class="m-2 card card-blue">
+                    <div class="card-header">
+                        <label>User Information</label>
+                    </div>
+                    <div class="card-body">
+                        <form id="UserBaseForm">
+                            <label hidden>Photo</label>
+                            <input hidden type="file" /><br />
+                            <label>BarCode</label><br />
+                            <input asp-for="BarCode" id="barcode" class=" form-control" /><br />
+                            <div class="row">
+                                <div class="col-4 col-md-2">
+                                    <label>Title</label>
+                                    <input asp-for="Title" class=" form-control" />
+                                </div>
+                                <div class="col-8 col-md-5">
+                                    <label>FirstNameEng</label><br />
+                                    <input asp-for="FirstName_ENG" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <label>LastNameEng</label><br />
+                                    <input asp-for="LastName_ENG" class=" form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label>FirstNameTh</label><br />
+                                    <input asp-for="FirstName_TH" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>LastNameTh</label><br />
+                                    <input asp-for="LastName_TH" class=" form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label>PositionName</label><br />
+                                    <input asp-for="Position_name" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>PositionId</label><br />
+                                    <input asp-for="Position_ID" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>DepartmentType</label><br />
+                                    <input asp-for="Department_type" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>DepartmentName</label><br />
+                                    <input asp-for="Department_name" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Nickname</label><br />
+                                    <input asp-for="Nickname" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Status</label><br />
+                                    <input asp-for="Status" class=" form-control" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card card-cyan">
+                    <div class="card-header">
+                        <label>Department</label>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <label class="col-6 col-md-3">0:Admin</label>
+                            <label class="col-6 col-md-3">1:Executive</label>
+                            <label class="col-6 col-md-3">2:Manager</label>
+                            <label class="col-6 col-md-3">3:Accounting & Store</label>
+                            <label class="col-6 col-md-3">4:Purchase</label>
+                            <label class="col-6 col-md-3">5:HR & Admin</label>
+                            <label class="col-6 col-md-3">6:Customer Service</label>
+                            <label class="col-6 col-md-3">7:IT</label>
+                            <label class="col-6 col-md-3">8:Drawing</label>
+                            <label class="col-6 col-md-3">9:Factory</label>
+                            <label class="col-6 col-md-3">10:General</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 col-12 h-100">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <label>Righths</label>
+                    </div>
+                    <div class="card-body">
+                        <div class="card">
+                            <div class="card-header">
+                                <label>Store</label>
+                            </div>
+                            <div class="card-body row storeCheck">
+                                    <div class="col-12 col-md-4">
+                                        <input type="checkbox" name="storechecked" value="Part_Search" />
+                                        <label>Part_Search</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="Pick_Up" />
+                                        <label>Pick_Up</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="Store_Management" />
+                                        <label>Store_Management</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="Supplier_System" />
+                                        <label>Supplier_System</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="Approve" />
+                                        <label>Approve</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="Report" />
+                                        <label>Report</label>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                    <input type="checkbox" name="storechecked" value="ManagePickUp" />
+                                        <label>ManagePickUp</label>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <label>Tool Inventory</label>
+                            </div>
+                            <div class="card-body row BorrowCheck">
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="Borrow" />
+                                    <label>Borrow</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="Return" />
+                                    <label>Return</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="History" />
+                                    <label>History</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="EditTool" />
+                                    <label>EditTool</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="Approve" />
+                                    <label>Approve</label>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <input type="checkbox" value="ManageBorrow" />
+                                    <label>ManageBorrow</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <label>Manage User</label>
+                            </div>
+                            <div class="card-body row UserCheck">
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="ViewUser" />
+                                    <label>View User</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="EditUser" />
+                                    <label>Edit User</label>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <input type="checkbox" value="SND_Organize" />
+                                    <label>SND_Organize</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="btnSave" class="btn btn-secondary w-100">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $("#btnSave").click(function () {
+            var storeCheck = Array.from($(".storeCheck input[type=checkbox]"));
+            var storevalues = storeCheck.filter(x => x.checked).map(x => x.value);
+            var BorrowCheck = Array.from($(".BorrowCheck input[type=checkbox]"));
+            var Borrowvalues = BorrowCheck.filter(x => x.checked).map(x => x.value);
+            var UserCheck = Array.from($(".UserCheck input[type=checkbox]"));
+            var Uservalues = UserCheck.filter(x => x.checked).map(x => x.value);
+            var valueAccess = [storevalues, Borrowvalues, Uservalues];
+            var barcode = $("#barcode").val();
+            $.post("/SNDUser/SaveAccess", { valueAccess, barcode }).done(function (data) {
+                if (data) {
+                    $("#UserBaseForm").attr('action', '/SNDUser/SaveUserBase');
+                    $("#UserBaseForm").submit();
+                }
+                else{
+                    alert("Please click Access to All group.")
+                }
+            });
+        });
+        
+    </script>
+}

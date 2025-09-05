@@ -1,0 +1,141 @@
+﻿@using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["activeviewtool"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var tool = ViewData["tool"] as List<Tool>;
+}
+<style>
+    .img-frame {
+        width: 100%;
+        height: 150px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .img-frame img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* รักษาสัดส่วนภาพในกรอบ */
+            display: block;
+        }
+
+</style>
+
+<div class="text-center">
+    <h3 class="display-4">Welcome to Tool Inventory</h3>
+    <div class="row my-3 mx-3 d-flex flex-wrap">
+        @foreach (var item in tool)
+        {
+            <div class="col-12 col-md-3 my-3 d-flex align-items-stretch">
+                <div class="card m-3 w-100" id="card_@item.ID" style="min-height: 300px;">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="img-frame">
+                                <img src="/imgtool/@item.Picture" alt="tool image" />
+                            </div>
+                            <br />
+                            <label>ชื่อ : @item.Name_ENG</label><br />
+                            <label>จำนวน: @item.Quantity </label><br />
+                            <label>Location: @item.Location </label><br />
+                        </div>
+                    </div>
+                </div>
+                <div style="position:absolute;right:10%;bottom:10%;width:7%;height:7%;">
+                    <a onclick="AddToBorrow('@item.ID','#card_@item.ID')" style="cursor: pointer;">
+                        <img src="~/img/basket.png" class="img-fluid " />
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div style="position:absolute;bottom:8%; right:3%; width:5%;">
+        <a style="cursor: pointer; position:relative;" onclick="borrow()">
+            <img src="~/img/naxt.png" class="img-fluid" />
+            <label style="position: absolute; top: 50%;left: 50%;transform: translate(-50%, -50%);cursor: pointer;" class="text-white">ยืมอุปกรณ์</label>
+       </a>
+    </div>
+    
+</div>
+
+
+@section Scripts{
+    <script>
+        if ("@TempData["result"]" != "") {
+            document.addEventListener("DOMContentLoaded", function () {
+                var message = "@TempData["result"]";
+
+                // แสดง alert
+                alert(`${message}`);
+            });
+        }
+        var lastCount = sessionStorage.getItem("countOfTool");
+        var countOfTool = 0;
+        if (lastCount != null) {
+            countOfTool = lastCount;
+        }
+        var IdTool = [];
+        var checklastID = sessionStorage.getItem("IDTool");
+        if (checklastID != null) {
+            IdTool = checklastID.split(",")
+
+            IdTool.forEach(function (id) {
+                var card = $("#card_" + id); // ค้นหาองค์ประกอบตาม ID
+                if (card.length > 0) {
+                    card.addClass("bg-blue");
+                }
+            });
+        }
+        function AddToBorrow(IDTool, card_ID) {
+            // ตรวจสอบว่ามีคลาส "bg-blue" อยู่หรือไม่
+            if ($(card_ID).hasClass("bg-blue")) {
+                // ถ้ามี ให้เอาคลาสออก
+                $(card_ID).removeClass("bg-blue");
+
+                // เอา IDTool ออกจาก Array
+                const index = IdTool.indexOf(IDTool); // หาตำแหน่งของ IDTool
+                if (index !== -1) {
+                    IdTool.splice(index, 1); // ลบ IDTool ออกจาก Array
+                }
+
+                // อัปเดตข้อมูลใน sessionStorage
+                countOfTool -= 1;
+                sessionStorage.setItem("countOfTool", countOfTool);
+                sessionStorage.setItem("IDTool", IdTool);
+
+            } else {
+                // ถ้าไม่มีคลาส ให้เพิ่มคลาส
+                $(card_ID).addClass("bg-blue");
+                if (countOfTool < 5) {
+                    countOfTool += 1;
+                    IdTool.push(IDTool);
+                }
+                else {
+                    alert("เลือกได้มากสุดแค่ 5 อย่าง")
+                }
+               
+
+                // อัปเดตข้อมูลใน sessionStorage
+                sessionStorage.setItem("countOfTool", countOfTool);
+                sessionStorage.setItem("IDTool", IdTool);
+            }
+        }
+
+        function borrow() {
+            $.post("/Tool/SaveAndclearToolBorrow", { IdTool: IdTool }, function (data) {
+                sessionStorage.removeItem("countOfTool");
+                sessionStorage.removeItem("IDTool");
+                $(".bg-blue").removeClass("bg-blue");
+                window.location.href = "/Tool/Borrow";
+            });
+        }
+
+    </script>
+}
+

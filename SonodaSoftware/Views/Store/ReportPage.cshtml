@@ -1,0 +1,123 @@
+﻿@using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Report";
+    ViewData["activestore"] = "active";
+    ViewData["activeReport"] = "active";
+    ViewData["openStore"] = "menu-open";
+    var approve = ViewData["approve"] as List<Store_Approve>;
+}
+<div class="card mt-3">
+    <div class=" card-header">
+        <label>Report</label>
+    </div>
+    <div class="card-body">
+        <div class="card card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <label>
+                        SelectReport :
+                        <select id="ReportType">
+                            <option></option>
+                            <option value="0">Addpart</option>
+                            <option value="1">Editpart</option>
+                            <option value="2">DeletePart</option>
+                            <option value="3">PickUp</option>
+                            <option value="4">Recieve</option>
+                            <option value="5">AddSupplier</option>
+                            <option value="6">EditSupplier</option>
+                            <option value="7">Approve</option>
+                        </select>
+                    </label>
+                </div>
+                <div>
+                    <label>StartDate: <input id="StartDate" type="date" /></label>
+                    <label>EndDate: <input id="EndDate" type="date" /></label>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary text-end" onclick="viewReport()">View</button>
+            </div>
+        </div>
+        <div>
+            <table id="dataTable" class="table">
+
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const today = new Date().toISOString().split('T')[0]; // yyyy-MM-dd
+            $("#StartDate").val(today);
+            $("#EndDate").val(today);
+        });
+
+    var type;
+    $("#ReportType").change(function () {
+        type = $(this).val();
+    });
+
+    function viewReport() {
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+
+        if (type != undefined && type != "") {
+            if (StartDate != "") {
+                if (EndDate != "") {
+                    // เรียกข้อมูลจาก API
+                  $.get("/Store/getReport", { reportType: type, startDate: StartDate, endDate: EndDate })
+    .done(function (de) {
+        var data = JSON.parse(de);
+
+        // กำหนดโครงสร้างตาราง
+        const $table = $("#dataTable");
+        if ($.fn.DataTable.isDataTable($table)) {
+            $table.DataTable().destroy(); // ทำลาย DataTable เดิม (ถ้ามี)
+        }
+        $table.empty();
+
+        // สร้างหัวตาราง
+        let headerHtml = "<tr>";
+        if (data.column && Array.isArray(data.column)) {
+            data.column.forEach(col => {
+                headerHtml += `<th>${col}</th>`;
+            });
+        }
+        headerHtml += "</tr>";
+        $table.append("<thead>" + headerHtml + "</thead>");
+
+        // ตรวจสอบข้อมูล
+        const rows = data.rows.map(row => {
+            return data.column.map(col => row[col] || ""); // สร้างข้อมูลสำหรับแต่ละคอลัมน์
+        });
+
+        // สร้าง DataTable
+        $table.DataTable({
+            data: rows,
+            columns: data.column.map(col => ({ title: col })), // ใช้ชื่อคอลัมน์เป็น header
+            dom: "Bfrtip",
+            buttons: [
+                "csv", "excel", "pdf", "print"
+            ],
+            responsive: true
+        });
+    })
+    .fail(function () {
+        alert("ไม่สามารถโหลดข้อมูลรายงานได้ โปรดลองอีกครั้ง");
+    });
+
+                } else {
+                    alert("กรุณาเลือกวันสิ้นสุด");
+                }
+            } else {
+                alert("กรุณาเลือกวันเริ่มต้น");
+            }
+        } else {
+            alert("กรุณาเลือก report");
+        }
+    }
+</script>
+}

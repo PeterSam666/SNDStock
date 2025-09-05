@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "ViewToolBorrow";
+    ViewData["activeViewToolBorrow"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var borrow = ViewData["historyModel"] as List<HistoryModel>;
+}
+
+<div class="text-center">
+    <label class="h3">ประวัติการยืม</label>
+    <div class="card m-5">
+        <table class="table" id="historyTable">
+            <thead>
+                <tr>
+                    <th>DateTime</th>
+                    <th>User</th>
+                    <th>Job</th>
+                    <th>Tool</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (borrow != null)
+                {
+                    foreach (var item in borrow)
+                    {
+                        <tr>
+                            <td>@item.DateTime</td>
+                            <td>@item.UserBorrow</td>
+                            <td>@item.Job</td>
+                            <td>@item.Tool</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Unit</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        new DataTable('#historyTable', {
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip', // ใช้เพื่อแสดงปุ่ม
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ]
+        });
+    </script>
+}
+

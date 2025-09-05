@@ -1,0 +1,49 @@
+﻿@using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Approve";
+    ViewData["activeApprove"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var approve = ViewData["approve"] as List<Store_Approve>;
+}
+<div class="card">
+    <div class=" card-header">
+        <label>Approve</label>
+    </div>
+    <div class="card-body">
+        <div>
+            <table id="tableApprove" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th hidden>Apporve_Type</th>
+                        <th>Apporve_Type</th>
+                        <th>Date</th>
+                        <th hidden>Request_ID</th>
+                        <th>Request_Name</th>
+                        <th hidden>Referent_EventID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (approve != null)
+                    {
+                        foreach (var item in approve)
+                        {
+                            <tr>
+                                <td>@item.ID</td>
+                                <td hidden>@item.Apporve_Type</td>
+                                <td>@item.Apporve_Type_Name</td>
+                                <td>@item.Date</td>
+                                <td hidden>@item.Request_ID</td>
+                                <td>@item.Request_Name</td>
+                                <td hidden>@item.Referent_EventID</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,109 @@
+﻿
+@{
+    ViewData["Title"] = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["activeJobmanage"] = "active";
+    ViewData["activeReportJob"] = "active";
+    ViewData["openJob"] = "menu-open";
+}
+
+<div>
+    <div class="d-flex justify-content-between p-3">
+        <div>
+            <label>
+                SelectReport :
+                <select id="ReportType">
+                    <option></option>
+                    <option value="3">Editpart</option>
+                    <option value="2">PickUp</option>
+                    <option value="1">Recieve</option>
+                </select>
+            </label>
+        </div>
+        <div>
+            <label class="mx-2"> StartDate : <input type="date" id="StartDate" /></label>
+            <label class="mx-2"> EndDate : <input type="date" id="EndDate" /></label>
+            <button class="btn btn-outline-secondary" onclick="getReport()">View</button>
+        </div>
+    </div>
+    <div>
+        <div class="card p-5" id="report">
+            <table id="reportTatble" class="display nowrap table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        <th>Barcode</th>
+                        <th>PartNameEng</th>
+                        <th>PartNameThai</th>
+                        <th>Job</th>
+                        <th>Quantity</th>
+                        <th>Description</th>
+                        <th>Reveal_Name</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            const today = new Date().toISOString().split('T')[0]; // yyyy-MM-dd
+            $("#StartDate").val(today);
+            $("#EndDate").val(today);
+            $("#report").hide();
+        });
+
+        let reportTable; // เก็บ instance datatable
+
+        function getReport() {
+            const StartDate = $("#StartDate").val();
+            const EndDate = $("#EndDate").val();
+            const ReportType = $("#ReportType").val();
+
+            $.get("/job/Getreport", { StartDate, EndDate, ReportType }, function (data) {
+                if ($.fn.DataTable.isDataTable('#reportTatble')) {
+                    reportTable.clear().rows.add(data).draw();
+                } else {
+                    reportTable = $('#reportTatble').DataTable({
+                        data: data,
+                        columns: [
+                            { data: 'dateTime' },
+                            { data: 'barcode' },
+                            { data: 'partNameEng' },
+                            { data: 'partNameThai' },
+                            { data: 'job' },
+                            { data: 'quantity' },
+                            { data: 'description' },
+                            { data: 'reveal_Name' }
+                        ],
+                        columnDefs: [
+                            {
+                                targets: '_all', // ใช้กับทุกคอลัมน์
+                                className: 'text-wrap'
+                            }
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ],
+                        responsive: true,
+                        language: {
+                            emptyTable: "ไม่พบข้อมูลในช่วงเวลาที่เลือก"
+                        }
+                    });
+
+                }
+
+                $("#report").show();
+            }).fail(function () {
+                alert("เกิดข้อผิดพลาดในการโหลดรายงาน");
+            });
+        }
+
+
+    </script>
+}
+

@@ -1,0 +1,404 @@
+﻿@using SonodaSoftware.Data
+@model Store_Supplier
+@{
+    ViewData["Title"] = "Suuplier";
+    ViewData["activestore"] = "active";
+    ViewData["activeSuuplier"] = "active";
+    ViewData["openStore"] = "menu-open";
+    var supplier = ViewData["supplier"] as List<Store_Supplier>;
+}
+<div class="card">
+    <div class="card-header">
+        <label>Supplier</label>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-end my-3 ">
+            <button class="btn btn-primary" id="AddSupplier">AddSupplier</button>
+        </div>
+        <table class="table mt-3" id="Supplier">
+            <thead>
+                <tr>
+                    <th hidden>ID</th>
+                    <th>SupplierID</th>
+                    <th>SupplierName</th>
+                    <th hidden>AddressDetail</th>
+                    <th hidden>Country</th>
+                    <th>Province</th>
+                    <th hidden>District</th>
+                    <th hidden>Sub_District</th>
+                    <th hidden>PostCode</th>
+                    <th>Email</th>
+                    <th hidden>Email2</th>
+                    <th>FirstName1</th>
+                    <th hidden>LastName1</th>
+                    <th>MobileNumber1</th>
+                    <th hidden>FirstName2</th>
+                    <th hidden>LastName2</th>
+                    <th hidden>MobileNumber2</th>
+                    <th hidden>PhoneNumber1</th>
+                    <th hidden>PhoneNumber2</th>
+                    <th hidden>Fax1</th>
+                    <th hidden>Fax2</th>
+                    <th hidden>Credit</th>
+                    <th hidden>Account_No</th>
+                    <th hidden>Created_On</th>
+                    <th hidden>Modify_On</th>
+                    <th hidden>status</th>
+                    <th >Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (supplier != null)
+                {
+                    foreach (var item in supplier)
+                    {
+                        <tr>
+                            <td hidden>@item.ID</td>
+                            <td>@item.SupplierID</td>
+                            <td>@item.SupplierName</td>
+                            <td hidden>@item.AddressDetail</td>
+                            <td hidden>@item.Country</td>
+                            <td>@item.Province</td>
+                            <td hidden>@item.District</td>
+                            <td hidden>@item.Sub_District</td>
+                            <td hidden>@item.PostCode</td>
+                            <td >@item.Email</td>
+                            <td hidden>@item.Email2</td>
+                            <td>@item.FirstName1 @item.LastName1</td>
+                            <td hidden>@item.LastName1</td>
+                            <td >@item.MobileNumber1</td>
+                            <td hidden>@item.FirstName2</td>
+                            <td hidden>@item.LastName2</td>
+                            <td hidden>@item.MobileNumber2</td>
+                            <td hidden>@item.PhoneNumber1</td>
+                            <td hidden>@item.PhoneNumber2</td>
+                            <td hidden>@item.Fax1</td>
+                            <td hidden>@item.Fax2</td>
+                            <td hidden>@item.Credit</td>
+                            <td hidden>@item.Account_No</td>
+                            <td hidden>@item.Created_On</td>
+                            <td hidden>@item.Modify_On</td>
+                            <td hidden>@item.status</td>
+                            <td><button onclick="EditSupplier(@item.ID)" class="btn btn-secondary">Edit</button></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal AddSupplier-->
+<form asp-action="AddSupplier" >
+    <div class="modal fade" id="ModalAddSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="h3">Add Supplier</label><br />
+                    <button onclick="closeModal('#ModalAddSupplier')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="card">
+                        <table width='100%'>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>SupplierID</div>
+                                    <input class="form-control" asp-for="SupplierID">
+                                </td>
+                                <td align='left' colspan='3'>
+                                    <div style='font-size:0.8em;color:black;'>SupplierName</div>
+                                    <input class="form-control" asp-for="SupplierName">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left' colspan='3'>
+                                    <div style='font-size:0.8em;color:black;'>
+                                        AddressDetail</div>
+                                    <input class="form-control" asp-for="AddressDetail">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Country</div>
+                                    <input class="form-control" asp-for="Country">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Sub_District</div>
+                                    <input class="form-control" asp-for="Sub_District">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>District</div>
+                                    <input class="form-control" asp-for="District">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Province</div>
+                                    <input class="form-control" asp-for="Province">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>PostCode</div>
+                                    <input class="form-control" asp-for="PostCode">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Email</div>
+                                    <input class="form-control" asp-for="Email">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Email2</div>
+                                    <input class="form-control" asp-for="Email2">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Fax1</div>
+                                    <input class="form-control" asp-for="Fax1">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Fax2</div>
+                                    <input class="form-control" asp-for="Fax2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>Credit</div>
+                                    <input class="form-control" asp-for="Credit">
+                                </td>
+                                <td align='left' colspan='3'>
+                                    <div style='font-size:0.8em;color:black;'>Account_No</div>
+                                    <input class="form-control" asp-for="Account_No">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>FirstName1</div>
+                                    <input class="form-control" asp-for="FirstName1">
+                                </td>
+                                <td align='left' colspan='2'>
+                                    <div style='font-size:0.8em;color:black;'>LastName1</div>
+                                    <input class="form-control" asp-for="LastName1">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>MobileNumber1</div>
+                                    <input class="form-control" asp-for="MobileNumber1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>FirstName2</div>
+                                    <input class="form-control" asp-for="FirstName2">
+                                </td>
+                                <td align='left' colspan='2'>
+                                    <div style='font-size:0.8em;color:black;'>LastName2</div>
+                                    <input class="form-control" asp-for="LastName2">
+                                </td>
+                                <td align='left'>
+                                    <div style='font-size:0.8em;color:black;'>MobileNumber2</div>
+                                    <input class="form-control" asp-for="MobileNumber2">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <button class="btn btn-primary form-control mt-2">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+    <div class="modal fade" id="ModalEditSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="h3">Edit Supplier</label><br />
+                    <button onclick="closeModal('#ModalEditSupplier')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="card">
+                    <table width='100%'>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>SupplierID</div>
+                                <input class="form-control" id="SupplierID_2">
+                            </td>
+                            <td align='left' colspan='3'>
+                                <div style='font-size:0.8em;color:black;'>SupplierName</div>
+                                <input class="form-control" id="SupplierName_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left' colspan='3'>
+                                <div style='font-size:0.8em;color:black;'>
+                                    AddressDetail</div>
+                                        <input class="form-control" id="AddressDetail_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Country</div>
+                                <input class="form-control" id="Country_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Sub_District</div>
+                                <input class="form-control" id="Sub_District_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>District</div>
+                                <input class="form-control" id="District_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Province</div>
+                                <input class="form-control" id="Province_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>PostCode</div>
+                                <input class="form-control" id="PostCode_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Email</div>
+                                <input class="form-control" id="Email_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Email2</div>
+                                <input class="form-control" id="Email2_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Fax1</div>
+                                <input class="form-control" id="Fax1_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Fax2</div>
+                                <input class="form-control" id="Fax2_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>Credit</div>
+                                <input class="form-control" id="Credit_2">
+                            </td>
+                            <td align='left' colspan='3'>
+                                <div style='font-size:0.8em;color:black;'>Account_No</div>
+                                <input class="form-control" id="Account_No_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>FirstName1</div>
+                                <input class="form-control" id="FirstName1_2">
+                            </td>
+                            <td align='left' colspan='2'>
+                                <div style='font-size:0.8em;color:black;'>LastName1</div>
+                                <input class="form-control" id="LastName1_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>MobileNumber1</div>
+                                <input class="form-control" id="MobileNumber1_2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>FirstName2</div>
+                                <input class="form-control" id="FirstName2_2">
+                            </td>
+                            <td align='left' colspan='2'>
+                                <div style='font-size:0.8em;color:black;'>LastName2</div>
+                                <input class="form-control" id="LastName2_2">
+                            </td>
+                            <td align='left'>
+                                <div style='font-size:0.8em;color:black;'>MobileNumber2</div>
+                                <input class="form-control" id="MobileNumber2_2">
+                            </td>
+                        </tr>
+                    </table>
+                    </div>
+                <button onclick="SaveEdit()" class="btn btn-primary form-control mt-2">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts{
+    <script>
+        var IDSupplier;
+        $("#Supplier").DataTable({
+            scrollX: true,
+            autoWidth: false,
+        });
+        $("#AddSupplier").click(function () {
+            $('#ModalAddSupplier').modal('show');
+        });
+        function EditSupplier(ID) {
+            IDSupplier = ID;
+             $.get("/Store/findForEdit?ID=" + ID, function (data) {
+                if (data != "") {
+                    $('#ModalEditSupplier').modal('show');
+                    $("#SupplierID_2").val(data.supplierID);
+                    $("#SupplierName_2").val(data.supplierName);
+                    $("#AddressDetail_2").val(data.addressDetail);
+                    $("#Country_2").val(data.country);
+                    $("#Province_2").val(data.province);
+                    $("#District_2").val(data.district);
+                    $("#Sub_District_2").val(data.sub_District);
+                    $("#PostCode_2").val(data.postCode);
+                    $('#Email_2').val(data.email);;
+                    $("#Email2_2").val(data.email2);
+                    $("#FirstName1_2").val(data.firstName1);
+                    $("#LastName1_2").val(data.lastName1);
+                    $("#MobileNumber1_2").val(data.mobileNumber1);
+                    $("#FirstName2_2").val(data.firstName2);
+                    $("#LastName2_2").val(data.lastName2);
+                    $("#MobileNumber2_2").val(data.mobileNumber2);
+                    $("#PhoneNumber1_2").val(data.phoneNumber1);
+                    $("#PhoneNumber2_2").val(data.phoneNumber2);
+                    $("#Fax1_2").val(data.fax1);
+                    $("#Fax2_2").val(data.fax2);
+                    $("#Credit_2").val(data.credit);
+                    $("#Account_No_2").val(data.account);
+                    //$("#SupplierID").val(data.supplierID);
+                    
+                }
+            });
+        }
+
+        function SaveEdit() {
+            var Store_Supplier = {
+                id: IDSupplier,
+                supplierID: $("#SupplierID_2").val(),
+                supplierName:$("#SupplierName_2").val(),
+                addressDetail: $("#AddressDetail_2").val(),
+                country: $("#Country_2").val(),
+                province: $("#Province_2").val(),
+                district: $("#District_2").val(),
+                sub_District: $("#Sub_District_2").val(),
+                postCode: $("#PostCode_2").val(),
+                email: $('#Email_2').val(),
+                email2: $("#Email2_2").val(),
+                firstName1: $("#FirstName1_2").val(),
+                lastName1: $("#LastName1_2").val(),
+                mobileNumber1: $("#MobileNumber1_2").val(),
+                firstName2: $("#FirstName2_2").val(),
+                lastName2: $("#LastName2_2").val(),
+                mobileNumber2: $("#MobileNumber2_2").val(),
+                phoneNumber1: $("#PhoneNumber1_2").val(),
+                phoneNumber2: $("#PhoneNumber2_2").val(),
+                fax1: $("#Fax1_2").val(),
+                fax2: $("#Fax2_2").val(),
+                credit: $("#Credit_2").val(),
+                account: $("#Account_No_2").val()
+            }
+
+            $.post("/Store/EditSupplier", { _EditSupplier: Store_Supplier }, function (data) {
+                alert(data);
+            });
+        }
+
+        function closeModal(modal) {
+            $(modal).modal('hide');
+        }
+    </script>
+}

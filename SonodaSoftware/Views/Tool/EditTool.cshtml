@@ -1,0 +1,198 @@
+﻿@using SonodaSoftware.Data
+@model Tool
+@{
+    ViewData["Title"] = "EditTool";
+    ViewData["activeEditTool"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var barcode = Convert.ToInt32(ViewData["runbarcode"]);
+    var tool = ViewData["tool"] as List<Tool>;
+}
+
+<style>
+    .image-preview {
+        width: 100%;
+        height: 200px; /* คุณสามารถกำหนดความสูงที่เหมาะสม */
+        border: 1px dashed #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+    }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+</style>
+
+<div class="text-center mx-2">
+    <label class="h2">แก้ไขข้อมูลอุปกรณ์</label>
+    <div class="row m-0 p-0">
+        <div class="col-md-7 col-12">
+            <div class="card m-3">
+                <div class="card-header">
+                    <label>เลือกอุปกรณ์ที่จะแก้ไข</label>
+                </div>
+                <div class="card-body">
+                    <table class="table" id="ToolTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name_ENG</th>
+                                <th>Name_TH</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Location</th>
+                                <th>Picture</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in tool)
+                            {
+                                <tr>
+                                    <td>@item.ID</td>
+                                    <td>@item.Name_ENG</td>
+                                    <td>@item.Name_TH</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.Unit</td>
+                                    <td>@item.Location</td>
+                                    <td><img src="/imgtool/@item.Picture" alt="Tool Image" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div>
+                        <button onclick="resetdatatformTable()">ยกเลิกการเลือกTool</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 col-12">
+            <form id="Edit" enctype="multipart/form-data" method="post">
+                <div class="card m-3">
+                    <div class="card-header">
+                        <label>รายละเอียดอุปกรณ์</label>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <label>รูปภาพอุปกรณ์</label>
+                            <div class="image-preview">
+                                <img id="imagePreview" src="" alt="รูปภาพที่เลือกจะแสดงที่นี่" />
+                            </div>
+                            <input type="file" id="imageInput" class="form-control-file" name="file" onchange="previewImage(event)" />
+                            <button type="button" class="btn btn-outline-danger mt-2" onclick="resetImage()">ยกเลิกรูปที่เลือก</button>
+                        </div>
+                        <input id="Id" class="form-control" asp-for="ID" hidden /><br />
+                        <label>Name_ENG</label><br />
+                        <input id="Name_ENG" class="form-control" asp-for="Name_ENG" /><br />
+                        <label>Name_TH</label><br />
+                        <input id="Name_TH" class="form-control" asp-for="Name_TH" /><br />
+                        <label>Quantity</label><br />
+                        <input id="Quantity" class="form-control" asp-for="Quantity" /><br />
+                        <label>Unit</label><br />
+                        <input id="Unit" class="form-control" asp-for="Unit" /><br />
+                        <label>Location</label><br />
+                        <input id="Location" class="form-control" asp-for="Location" /><br />
+                        <div class="my-2">
+                            <button onclick="editTool('plusTool')" class="btn btn-outline-secondary">เพิ่มจำนวน</button>
+                            <button onclick="editTool('DownTool')" class="btn btn-outline-secondary">ลดจำนวน</button>
+                        </div>
+                        <div class="my-2">
+                            <button onclick="editTool('AddTool')" class="btn btn-outline-secondary">นำอุปกรณ์เข้าระบบเพิ่ม</button>
+                            <button onclick="editTool('EditDetailTool')" class="btn btn-outline-secondary">แก้ไขข้อมูลอุปกรณ์</button>
+                            <button onclick="editTool('DeleteTool')" class="btn btn-outline-secondary">นำอุปกรณ์ออกจากระบบ</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        if ("@TempData["AlertMessage"]" != "") {
+            document.addEventListener("DOMContentLoaded", function () {
+                var message = "@TempData["AlertMessage"]";
+
+                // แสดง alert
+                alert(`${message}`);
+            });
+        }
+        var table = $("#ToolTable").DataTable({
+            scrollX: true,
+            autoWidth: false
+        });
+
+        $('#ToolTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            $("#Id").val($(this).find('td:first-child').html());
+            $("#Name_ENG").val($(this).find('td:nth-child(2)').html());
+            $("#Name_TH").val($(this).find('td:nth-child(3)').html());
+            $("#Quantity").val($(this).find('td:nth-child(4)').html());
+            $("#Unit").val($(this).find('td:nth-child(5)').html());
+            $("#Location").val($(this).find('td:nth-child(6)').html());
+            // ดึง src ของรูปใน <td> และแสดงในกรอบรูป
+            const imgSrc = $(this).find('td:nth-child(7) img').attr('src'); // ดึง src ของรูปภาพ
+            $('#imagePreview').attr('src', imgSrc); // ตั้งค่ารูปในกรอบตัวอย่าง
+        });
+        function editTool(mode) {
+            $("#Edit").attr('action', '/Tool/' + mode);
+            $("#Edit").submit();
+        }
+
+        function previewImage(event) {
+            const image = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                image.src = '';
+            }
+        }
+
+        function resetImage() {
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+
+            // ล้างค่าของ input และรูปภาพตัวอย่าง
+            imageInput.value = '';
+            imagePreview.src = '';
+        }
+
+        function resetdatatformTable() {
+            const selectedRow = document.querySelector('#ToolTable tbody tr.selected');
+            if (selectedRow) {
+                selectedRow.classList.remove('selected');
+            }
+
+            // รีเซ็ตค่าในฟิลด์ฟอร์ม
+            $("#Id").val('');
+            $("#Name_ENG").val('');
+            $("#Name_TH").val('');
+            $("#Quantity").val('');
+            $("#Unit").val('');
+            $("#Location").val('');
+            resetImage();
+        }
+
+
+
+    </script>
+}
+

@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewData["Title"] = "History";
+    ViewData["activehistory"] = "active";
+    ViewData["activeTool"] = "active";
+    ViewData["openTool"] = "menu-open";
+    var history = ViewData["historyModel"] as List<HistoryModel>;
+}
+<div class="text-center">
+    <label class="h3">Report</label>
+    <form asp-action="historyFilterDate" method="get">
+        <div class=" m-3 ">
+            <div class="d-flex justify-content-end">
+                <label>วันที่ : <input id="startDate" name="startDate" type="date" /> ถึง : <input id="endDate" name="endDate" type="date" /></label> <br />
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary">view</button>
+            </div>
+        </div>
+    </form>
+    <div class="card m-5">
+        <table class="table" id="historyTable">
+            <thead>
+                <tr>
+                    <th>วันที่ยืม</th>
+                    <th>วันที่คืน</th>
+                    <th>User</th>
+                    <th>Job</th>
+                    <th>Tool</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>สถานะ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (history != null)
+                {
+                    foreach (var item in history)
+                    {
+                        <tr>
+                            <td>@item.DateTime</td>
+                            <td>@item.ReturnAt</td>
+                            <td>@item.UserBorrow</td>
+                            <td>@item.Job</td>
+                            <td>@item.Tool</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Unit</td>
+                            <td>@item.status</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        new DataTable('#historyTable', {
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip', // ใช้เพื่อแสดงปุ่ม
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ]
+        });
+    </script>
+}
+

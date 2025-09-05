@@ -1,0 +1,282 @@
+﻿@using SonodaSoftware.Data
+@{
+    ViewData["Title"] = "Recieve";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["activeJobmanage"] = "active";
+    ViewData["activeRecieveJob"] = "active";
+    ViewData["openJob"] = "menu-open";
+    var job = ViewData["jobName"] as List<Job_NameJob>;
+}
+
+<div class="m-0">
+    <div class="d-flex justify-content-between m-0 p-3 bg-cyan">
+        <div>
+            <label>
+                select Job :
+                <input list="Job" id="NAME_Job" name="JobName">
+                <datalist id="Job" class="mx-4">
+                    <option value="" />
+                    @if (job != null)
+                    {
+                        foreach (var item in job)
+                        {
+                            <option value="@item.JobName" />
+                        }
+                    }
+                </datalist>
+            </label>
+        </div>
+        <div>
+            <label>if job don't have in selection click: <button type="button" data-bs-toggle="modal" data-bs-target="#JobModal">CreateJob</button></label>
+        </div>
+    </div>
+    <div id="recievepartinJob" class="text-center mt-2">
+        <label class="h5"> Job : <label class="me-2 text-secondary" id="namejob"></label> StartAt : <label class="me-2 text-secondary" id="startjob"></label> ResponsiblePerson : <label class="me-2 text-secondary" id="rpjob"></label></label>
+        <input type="hidden" id="jobId">
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="d-flex justify-content-center">
+                    <table class="table-bordered p-2 mt-5 ms-4">
+                        <tbody>
+                            <tr><td>Barcode</td><td><input name="Barcode" /></td></tr>
+                            <tr><td>PartNameEng</td><td><input name="PartNameEng" /></td></tr>
+                            <tr><td>PartNameThai</td><td><input name="PartNameThai" /></td></tr>
+                            <tr><td>Quantity</td><td><input name="Quantity" type="number"/></td></tr>
+                            <tr><td>RRNo</td><td><input name="PRNo" id="PRNo" /></td></tr>
+                            <tr><td>PONo</td><td><input name="PONo" id="PONo" /></td></tr>
+                            <tr><td>Description</td><td><input name="Description" /></td></tr>
+                            <tr><td>Location</td><td><input id="inputLocation" /></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mt-2 btn btn-outline-secondary" onclick="addPart()">Add Part</button>
+            </div>
+            <div class="col-md-9 col-12 my-2" id="tableShowPart">
+                <div class="card" id="tablepartjob">
+                </div>
+                <button class="btn btn-secondary" onclick="savePartList()">SavePart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal createJob -->
+<div class="modal fade" id="JobModal" tabindex="-1" aria-labelledby="JobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="JobModalLabel">Modal title</h5>
+                <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label>Job Name :</label>
+                    <input class="form-control mb-2" id="jobname" />
+                    <label>ResponsiblePerson</label>
+                    <input class="form-control" id="person" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addJob()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        
+        $(document).ready(function(){
+            $("#recievepartinJob").hide();
+            $("#tableShowPart").hide();
+        });
+            var jobList = @Html.Raw(Json.Serialize(job)); // ส่งข้อมูล job จาก Razor
+
+        $("#NAME_Job").change(function () {
+            const selectedName = $(this).val();
+            const job = jobList.find(j => j.jobName === selectedName);
+
+            if (job) {
+                $("#namejob").text(job.jobName);
+                $("#startjob").text(formatDate(job.startAt));
+                $("#rpjob").text(job.responsiblePerson);
+                $("#jobId").val(job.id); // ซ่อนเก็บ JobID เพื่อนำไปใช้
+
+                $("#recievepartinJob").show();
+            } else {
+                // เคลียร์ค่า ถ้าไม่พบ
+                $("#namejob").text("");
+                $("#startjob").text("");
+                $("#rpjob").text("");
+                $("#jobId").val("");
+
+                $("#recievepartinJob").hide();
+            }
+        });
+
+            function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString(); // หรือจัดรูปแบบเอง เช่น "dd/MM/yyyy"
+        }
+
+        var Lo = "";
+
+        function addJob(){
+            var jobname = $("#jobname").val();
+            var person = $("#person").val();
+            $.post("/Job/AddJob",{jobname,person},function(data){
+                    alert(data);
+                    location.reload();
+            });
+        }
+
+        const partList = [];
+
+        function addPart() {
+            var PRNo = '';
+            var PONo = '';
+            const data = {};
+            const inputs = document.querySelectorAll("table input");
+            Lo = $("#inputLocation").val();
+
+            inputs.forEach(input => {
+                data[input.name] = input.value;
+                if (input.name == 'PRNo') {
+                    PRNo = input.value;
+                } else if (input.name == 'PONo') {
+                    PONo = input.value;
+                }
+            });
+
+            // เพิ่มลง list
+            partList.push(data);
+            renderPartList();
+            clearInputs();
+            $("#PRNo").val(PRNo).prop("readonly", true);
+            $("#PONo").val(PONo).prop("readonly", true);
+        }
+
+         function renderPartList() {
+                    $("#tableShowPart").show();
+            const container = document.getElementById("tablepartjob");
+
+            // ตรวจสอบว่ามี <table> หรือยัง ถ้ายังไม่มีให้สร้าง
+            let table = document.getElementById("partTable");
+            if (!table) {
+                table = document.createElement("table");
+                table.id = "partTable";
+                table.className = "table table-bordered mt-3";
+                container.appendChild(table);
+            }
+
+            // เคลียร์ตารางก่อน render ใหม่
+            table.innerHTML = "";
+
+            // ตรวจสอบว่ามีข้อมูลหรือไม่
+            if (partList.length === 0) return;
+
+            // สร้าง thead ถ้ายังไม่มี
+            const thead = document.createElement("thead");
+            thead.innerHTML = `
+                <tr>
+                    <th>Barcode</th>
+                    <th>PartNameEng</th>
+                    <th>PartNameThai</th>
+                    <th>Quantity</th>
+                    <th>RRNo</th>
+                    <th>PONo</th>
+                    <th>Description</th>
+                    <th>Delete</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            // tbody
+            const tbody = document.createElement("tbody");
+
+            partList.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.Barcode}</td>
+                    <td>${item.PartNameEng}</td>
+                    <td>${item.PartNameThai}</td>
+                    <td>${item.Quantity}</td>
+                    <td>${item.PRNo}</td>
+                    <td>${item.PONo}</td>
+                    <td>${item.Description}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="removePart(${index})">ลบ</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+        }
+
+
+        function removePart(index) {
+            partList.splice(index, 1);
+            renderPartList();
+        }
+
+        function clearInputs() {
+            document.querySelectorAll("table input").forEach(input => input.value = "");
+        }
+
+        function savePartList() {
+            if (partList.length === 0) {
+                alert("ยังไม่มีข้อมูลรายการ Part");
+                return;
+            }
+
+            const jobId = $("#jobId").val(); // ดึงค่าจาก hidden input
+            if (!jobId) {
+                alert("กรุณาเลือกงานก่อนบันทึก Part");
+                return;
+            }
+
+            const now = new Date().toISOString();
+            const listToSend = partList.map(item => ({
+                ...item,
+                DateTime: now,
+                Reveal_Name: "ผู้ใช้ปัจจุบัน", // เปลี่ยนตามจริง
+                EventType: 1,
+                JobID: parseInt(jobId)
+            }));
+
+                    const payload = {
+            Parts: partList.map(item => ({
+                ...item,
+                DateTime: new Date().toISOString(),
+                Reveal_Name: "ผู้ใช้ปัจจุบัน",
+                EventType: 1,
+                JobID: parseInt($("#jobId").val())
+            })),
+            Location: Lo
+        };
+
+        $.ajax({
+            url: '/Job/SavePart',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    partList.length = 0;
+                    renderPartList();
+                } else {
+                    alert("ผิดพลาด: " + response.message);
+                }
+            },
+            error: function () {
+                alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+            }
+        });
+            $("#PRNo").val("").prop("readonly", false);
+            $("#PONo").val("").prop("readonly", false);
+
+        }
+
+    </script>
+}

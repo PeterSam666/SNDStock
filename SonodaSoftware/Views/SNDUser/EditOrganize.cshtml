@@ -1,0 +1,63 @@
+﻿@using SonodaSoftware.Data
+@model User_Organize
+@{
+    ViewData["Title"] = "EditUser";
+    ViewData["activeEditOrganize"] = "active";
+    ViewData["activeUsermanage"] = "active";
+    ViewData["openUser"] = "menu-open";
+}
+
+<form asp-action="saveOrganizeChart">
+    <div class="card mt-3">
+        <div class="card-header">
+            <label class="h3">EditOrganize</label>
+        </div>
+        <div class="card-body">
+            <div>
+                <label>SelectDepartmentType : </label>
+                <select id="selectDepartment">
+                    <option></option>
+                    <option value="0">Admin</option>
+                    <option value="1">Executive</option>
+                    <option value="2">Manager</option>
+                    <option value="3">Accounting & Store</option>
+                    <option value="4">Purchase</option>
+                    <option value="5">HR & Admin</option>
+                    <option value="6">Customer Service</option>
+                    <option value="7">IT</option>
+                    <option value="8">Drawing</option>
+                    <option value="9">Factory</option>
+                    <option value="10">General</option>
+                </select>
+            </div>
+            <div class="row">
+                <label class="col-12">VicePresident: <input asp-for="VicePresident" id="VicePresident" class="form-control" /></label>
+                <label class="col-12">AsstGM: <input asp-for="AsstGM" id="AsstGM" class="form-control" /></label>
+                <label class="col-12 col-md-6">SeniorManager1: <input asp-for="SeniorManager1" id="SeniorManager1" class="form-control" /></label>
+                <label class="col-12 col-md-6">SeniorManager2: <input asp-for="SeniorManager2" id="SeniorManager2" class="form-control" /></label>
+                <label class="col-12 col-md-6">Manager1: <input asp-for="Manager1" id="Manager1" class="form-control" /></label>
+                <label class="col-12 col-md-6">Manager2: <input asp-for="Manager2" id="Manager2" class="form-control" /></label>
+                <label class="col-12">Leader: <input asp-for="Leader" id="Leader" class="form-control" /></label>
+            </div>
+            <button class="btn btn-primary text-center form-control my-2">Save</button>
+        </div>
+    </div>
+</form>
+
+
+@section scripts {
+    <script>
+        $("#selectDepartment").change(function(){
+            var departmentType = $(this).val();
+            $.get("/SNDUser/getOrganizePerson?departmentType=" + departmentType, function (data) {
+                 $("#VicePresident").val(`${data.vicePresident}`);
+                 $("#AsstGM").val(`${data.asstGM}`);
+                 $("#SeniorManager1").val(`${data.seniorManager1}`);
+                 $("#SeniorManager2").val(`${data.seniorManager2}`);
+                 $("#Manager1").val(`${data.manager1}`);
+                 $("#Manager2").val(`${data.manager2}`);
+                 $("#Leader").val(`${data.leader}`);
+            });
+        });
+    </script>
+}

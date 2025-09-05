@@ -1,0 +1,765 @@
+﻿@using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Approve";
+    ViewData["activestore"] = "active";
+    ViewData["activeApprove"] = "active";
+    ViewData["openStore"] = "menu-open";
+    var approve = ViewData["approve"] as List<Store_Approve>;
+}
+<div class="card mt-3">
+    <div class=" card-header">
+        <label>Approve</label>
+    </div>
+    <div class="card-body">
+        <div>
+            <table id="tableApprove" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th hidden>Apporve_Type</th>
+                        <th>Apporve_Type</th>
+                        <th>Date</th>
+                        <th hidden>Request_ID</th>
+                        <th>Request_Name</th>
+                        <th hidden>Referent_EventID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (approve != null)
+                    {
+                        foreach (var item in approve)
+                        {
+                            <tr>
+                                <td>@item.ID</td>
+                                <td hidden>@item.Apporve_Type</td>
+                                <td>@item.Apporve_Type_Name</td>
+                                <td>@item.Date</td>
+                                <td hidden>@item.Request_ID</td>
+                                <td>@item.Request_Name</td>
+                                <td hidden>@item.Referent_EventID</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <button id="Detail" class="btn btn-secondary">Detail</button>
+        </div>
+    </div>
+</div>
+<div>
+    
+</div>
+
+
+<!-- Modal AddPart-->
+<div class="modal fade" id="ModalAddpart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">AddpartDetail</label><br />
+                <button onclick="CloseModal('#ModalAddpart')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="AddpartDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ModalEditPart-->
+<div class="modal fade" id="ModalEditPart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">EditPartDetail</label><br />
+                <button onclick="CloseModal('#ModalEditPart')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="EditPartDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ModalDeletePart-->
+<div class="modal fade" id="ModalDeletePart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">DeletePartDetail</label><br />
+                <button onclick="CloseModal('#ModalDeletePart')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="DeletePartDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ModalPickUp-->
+<div class="modal fade" id="ModalPickUp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">PickUpDetail</label><br />
+                <button onclick="CloseModal('#ModalPickUp')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="PickUpDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ModalDo-->
+<div class="modal fade" id="ModalDo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">ReciveDetail</label><br />
+                <button onclick="CloseModal('#ModalDo')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="DoDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal AddSupplier-->
+<div class="modal fade" id="ModalAddSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">AddSupplierDetail</label><br />
+                <button onclick="CloseModal('#ModalAddSupplier')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="AddSupplierDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal EditSupplier-->
+<div class="modal fade" id="ModalEditSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">EditSupplierDetail</label><br />
+                <button onclick="CloseModal('#ModalEditSupplier')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="EditSupplierDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input/></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal DeleteSupplier-->
+<div class="modal fade" id="ModalDeleteSupplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">DeleteSupplierDetail</label><br />
+                <button onclick="CloseModal('#ModalDeleteSupplier')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card card-body" id="DeleteSupplierDetail">
+                </div>
+            </div>
+            <div class=" modal-footer d-flex justify-content-end">
+                <label> เหตุผล : <input /></label>
+                <button onclick="RejectEvent('#ModalEditSupplier')" class="btn btn-danger">Reject</button>
+                <button onclick="ApproveEvent('#ModalEditSupplier')" class="btn btn-success">Approve</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        var Approve = new DataTable('#tableApprove');
+        var ID = "";
+        var ApproveType;
+        Approve.columns.adjust()
+        $(".dataTables_wrapper").css("width", "100%");
+        $('#tableApprove tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                Approve.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            ID = $(this).find('td:first-child').html();
+            ApproveType = $(this).find('td:nth-child(2)').html();
+        });
+        $("#Detail").click(function () {
+            $.post("/Store/DetailApprove", { id: ID, approveType: ApproveType }).done(function (data) {
+                if (ApproveType == 0) {
+                    $("#AddpartDetail").empty();
+                    $("#ModalAddpart").modal('show');
+                    var detail = JSON.parse(data);
+                    const AddpartDetail = `
+                             <div class="text-center">
+                            <label>เพิ่ม Part โดย ${detail.Maker} วันที่ ${detail.TimeStamp}</label><br>
+                    <label>รหัสคำขอ : <label>${detail.ID}</label></label><br>
+        </div>
+                <div class="row row-cols-12">
+        <table width="100%" cellpadding="5">
+        <thead>
+            <tr><th>ชื่อข้อมูล</th>
+            <th bgcolor='lightgray'>ข้อมูล</th>
+        </tr></thead>
+
+            <tbody><tr>
+                    <td align="left"><b>ID_Product</b></td>
+                    <td bgcolor='lightgray' align="left">${detail.ID_Product}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>PartGroupType</b></td>
+                    <td bgcolor='lightgray' align="left">${detail.PartGroupType}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>NAME_PRODUCT_ENG</b></td>
+                    <td bgcolor='lightgray' align="left">${detail.NAME_PRODUCT_ENG}</td>
+        </tr>
+        <tr>
+                            <td align="left"><b>NAME_PRODUCT_TH</b></td>
+                    <td bgcolor='lightgray'>${detail.NAME_PRODUCT_TH}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>QUANTITY</b></td>
+                    <td bgcolor='lightgray'>${detail.QUANTITY}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>UNIT</b></td>
+                    <td bgcolor='lightgray'>${detail.UNIT}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>UNIT_PRICE</b></td>
+                    <td bgcolor='lightgray'>${detail.UNIT_PRICE}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>Description</b></td>
+                    <td bgcolor='lightgray'>${detail.Description}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>Location</b></td>
+                    <td bgcolor='lightgray'>${detail.Location}</td>
+        </tr>
+                </tbody></table>
+                                </div>
+                                `;
+
+                    $("#AddpartDetail").append(AddpartDetail);
+                } else if (ApproveType == 1) {
+                    $("#EditPartDetail").empty();
+                    $("#ModalEditPart").modal('show');
+                    var detail = JSON.parse(data);
+                    const EditPartDetail = `
+                            <div class="text-center">
+                                    <label>ขอแก้ไขโดย ${detail.Maker} วันที่ ${detail.TimeStamp}</label><br>
+                    <label>รหัสคำขอ : <label>${detail.ID}</label></label><br>
+                        </div><div class="row row-cols-12">
+        <table width="100%" cellpadding="5">
+                <thead>
+            <tr><th>ชื่อข้อมูล</th>
+            <th bgcolor='lightgray'>ข้อมูลเก่า</th>
+            <th>ข้อมูลใหม่</th>
+        </tr></thead>
+
+            <tbody><tr>
+                    <td align="left"><b>ID_Product</b></td>
+                    <td bgcolor='lightgray' align="left">${detail.ID_Product}</td>
+                    <td align="left">${detail.ID_Product}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>NameEng</b></td>
+                    <td bgcolor='lightgray' align="left">${detail.Before_NameEng}</td>
+                    <td align="left">${detail.After_NameEng}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>NameTH</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_NameTH}</td>
+                    <td>${detail.After_NameTH}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>Quantity</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_Quantity}</td>
+                    <td>${detail.After_Quantity}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>Unit</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_Unit}</td>
+                    <td>${detail.After_Unit}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>UNIT_PRICE</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_UNIT_PRICE}</td>
+                    <td>${detail.After_UNIT_PRICE}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>Location</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_Location}</td>
+                    <td>${detail.After_Location}</td>
+        </tr>
+        <tr>
+                    <td align="left"><b>status</b></td>
+                    <td bgcolor='lightgray'>${detail.Before_status}</td>
+                    <td>${detail.After_status}</td>
+        </tr>
+        </tbody></table>
+                                </div>
+                                `;
+
+                    $("#EditPartDetail").append(EditPartDetail);
+                } else if (ApproveType == 2) {
+                    $("#ModalDeletePart").modal('show');
+
+                } else if (ApproveType == 3) {
+                    $("#PickUpDetail").empty();
+                    $("#ModalPickUp").modal('show');
+                    var detail = JSON.parse(data);
+                    var pickUp = detail.pickUp;
+                    const PickUpDetail = `
+                                                <div class="text-center">
+                                    <label>ขอเบิกโดย ${pickUp.PickUpBy} วันที่ ${pickUp.Date}</label><br>
+                                    <label>รหัสคำขอ : <label>${pickUp.ID}</label></label><br>
+                                    </div>
+                                        `;
+
+                    $("#PickUpDetail").append(PickUpDetail);
+
+                    var pickUpDetail = detail.pickupDetail;
+                    for (var i = 0; i < pickUpDetail.length; i++) {
+                        const PickUpDetail = `
+            <div class="row row-cols-12">
+                <table width="100%" cellpadding="5">
+                    <thead>
+                        <tr>
+                            <th>ชื่อข้อมูล</th>
+                            <th bgcolor="lightgray">ข้อมูล</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td align="left"><b>ID_Product</b></td>
+                            <td bgcolor="lightgray" align="left">${pickUpDetail[i].ID_Product}</td>
+                        </tr>
+                        <tr>
+                            <td align="left"><b>Item_QUANTITY</b></td>
+                            <td bgcolor="lightgray" align="left">${pickUpDetail[i].Item_QUANTITY}</td>
+                        </tr>
+                        <tr>
+                            <td align="left"><b>Name_EN</b></td>
+                            <td bgcolor="lightgray" align="left">${pickUpDetail[i].Name_EN}</td>
+                        </tr>
+                        <tr>
+                            <td align="left"><b>Name_TH</b></td>
+                            <td bgcolor="lightgray">${pickUpDetail[i].Name_TH}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr style="margin: 10px 0; border: 1px solid #ccc;"> <!-- เส้นแบ่ง -->
+            </div>
+        `;
+
+                        $("#PickUpDetail").append(PickUpDetail);
+
+                    }
+                } else if (ApproveType == 4) {
+                    $("#DoDetail").empty();
+$("#ModalDo").modal("show");
+
+var detail = JSON.parse(data); // แปลงข้อมูล JSON
+var Do = detail.Do;
+
+// HTML ส่วนหัว (รายละเอียดเบื้องต้น)
+var headerDetail = `
+    <div class="text-center">
+        <label>เพิ่มโดย ${Do.InputBy} วันที่ ${Do.Date}</label><br>
+        <label>รหัสคำขอ : <label>${Do.ID}</label></label><br>
+    </div>
+    <div class="row row-cols-12">
+        <table width="100%" cellpadding="5" class="text-center" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th bgcolor="lightgray" style="text-align: center;">ลำดับ</th>
+                    <th style="text-align: center;">ID_Product</th>
+                    <th bgcolor="lightgray" style="text-align: center;">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+`;
+
+var DoDetailsArray = detail.Detail; // ข้อมูลรายละเอียดที่เป็นอาร์เรย์
+for (var i = 0; i < DoDetailsArray.length; i++) {
+    // สร้าง HTML สำหรับแต่ละรายการในอาร์เรย์
+    var itemDetail = `
+        <tr>
+            <td bgcolor="lightgray" style="text-align: center;">${i + 1}</td>
+            <td style="text-align: center;">${DoDetailsArray[i].ID_Product}</td>
+            <td bgcolor="lightgray" style="text-align: center;">${DoDetailsArray[i].Quantity}</td>
+        </tr>
+    `;
+
+    headerDetail += itemDetail; // เพิ่ม HTML แต่ละรายการ
+}
+
+// ปิดแท็ก table และ div
+headerDetail += `
+        </tbody>
+        </table>
+        <hr style="margin: 10px 0; border: 1px solid #ccc;">
+    </div>
+`;
+
+// เพิ่ม HTML ลงใน `#DoDetail`
+$("#DoDetail").append(headerDetail);
+
+                } else if (ApproveType == 5) {
+                    $("#ModalAddSupplier").modal('show');
+                    $("#AddSupplierDetail").empty();
+                    var detail = JSON.parse(data);
+                    const AddSupplierDetail = `
+                            <div class="text-center">
+                            <label>ขอแก้ไขโดย ${detail.Maker} วันที่ ${detail.TimeStamp}</label><br>
+                    <label>รหัสคำขอ : <label>${detail.ID}</label></label><br>
+        </div>
+                 <div class="row row-cols-12">
+                <table width="100%" cellpadding="5">
+                <thead>
+                    <tr><th>ชื่อข้อมูล</th>
+                    <th bgcolor='lightgray'>ข้อมูล</th>
+                </tr></thead>
+
+                    <tbody><tr>
+                    <td align="left"><b>SupplierID</b></td>
+                                    <td bgcolor='lightgray' align="left">${detail.SupplierID}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>SupplierName</b></td>
+                                    <td bgcolor='lightgray' align="left">${detail.SupplierName}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>AddressDetail</b></td>
+                                    <td bgcolor='lightgray' align="left">${detail.AddressDetail}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Country</b></td>
+                                    <td bgcolor='lightgray'>${detail.Country}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Province</b></td>
+                                    <td bgcolor='lightgray'>${detail.Province}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>District</b></td>
+                                    <td bgcolor='lightgray'>${detail.District}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Sub_District</b></td>
+                                    <td bgcolor='lightgray'>${detail.Sub_District}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>PostCode</b></td>
+                                    <td bgcolor='lightgray'>$${detail.PostCode}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Email</b></td>
+                                    <td bgcolor='lightgray'>${detail.Email}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Email2</b></td>
+                                    <td bgcolor='lightgray'>${detail.Email2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>FirstName1</b></td>
+                                    <td bgcolor='lightgray'>${detail.FirstName1}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>LastName1</b></td>
+                                    <td bgcolor='lightgray'>${detail.LastName1}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>MobileNumber1</b></td>
+                                    <td bgcolor='lightgray'>${detail.MobileNumber1}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>FirstName2</b></td>
+                                    <td bgcolor='lightgray'>${detail.FirstName2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>LastName2</b></td>
+                                    <td bgcolor='lightgray'>${detail.LastName2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>MobileNumber2</b></td>
+                                    <td bgcolor='lightgray'>${detail.MobileNumber2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>PhoneNumber1</b></td>
+                                    <td bgcolor='lightgray'>${detail.PhoneNumber1}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>PhoneNumber2</b></td>
+                                    <td bgcolor='lightgray'>${detail.PhoneNumber2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Fax1</b></td>
+                                    <td bgcolor='lightgray'>${detail.Fax1}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Fax2</b></td>
+                                    <td bgcolor='lightgray'>${detail.Fax2}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Credit</b></td>
+                                    <td bgcolor='lightgray'>${detail.Credit}</td>
+                </tr>
+                <tr>
+                    <td align="left"><b>Account_No</b></td>
+                                    <td bgcolor='lightgray'>${detail.Account_No}</td>
+                </tr>
+                </tbody></table>
+                
+                        </div>
+                                `;
+
+                    $("#AddSupplierDetail").append(AddSupplierDetail);
+                } else if (ApproveType == 6) {
+                    $("#EditSupplierDetail").empty();
+                    $("#ModalEditSupplier").modal('show');
+                    var detail = JSON.parse(data);
+                    var olddetail = JSON.parse(detail.LastData);
+                    var newdetail = JSON.parse(detail.NewData);
+                    const EditSupplierDetail = `
+                              <div class="text-center">
+                                <label>ขอแก้ไขโดย ${detail.Maker} วันที่ ${detail.TimeStamp}</label><br>
+                                <label>รหัสคำขอ : <label>${detail.ID}</label></label><br>
+                            </div>
+                                    <div class="row row-cols-12">
+        <table width="100%" cellpadding="5">
+        <thead>
+            <tr><th>ชื่อข้อมูล</th>
+            <th bgcolor='lightgray'>ข้อมูลเก่า</th>
+            <th>ข้อมูลใหม่</th>
+        </tr></thead>
+
+            <tbody><tr>
+            <td align="left"><b>SupplierID</b></td>
+                    <td bgcolor='lightgray' align="left">${olddetail.SupplierID}</td>
+                    <td align="left">${newdetail.SupplierID}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>SupplierName</b></td>
+                    <td bgcolor='lightgray' align="left">${olddetail.SupplierName}</td>
+                    <td align="left">${newdetail.SupplierName}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>AddressDetail</b></td>
+                    <td bgcolor='lightgray' align="left">${olddetail.AddressDetail}</td>
+                    <td align="left">${newdetail.AddressDetail}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Country</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Country}</td>
+                    <td>${newdetail.Country}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Province</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Province}</td>
+                    <td>${newdetail.Province}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>District</b></td>
+                    <td bgcolor='lightgray'>${olddetail.District}</td>
+                    <td>${newdetail.District}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Sub_District</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Sub_District}</td>
+                    <td>${newdetail.Sub_District}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>PostCode</b></td>
+                    <td bgcolor='lightgray'>${olddetail.PostCode}</td>
+                    <td>${newdetail.PostCode}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Email</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Email}</td>
+                    <td>${newdetail.Email}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Email2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Email2}</td>
+                    <td>${newdetail.Email2}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>FirstName1</b></td>
+                    <td bgcolor='lightgray'>${olddetail.FirstName1}</td>
+                    <td>${newdetail.FirstName1}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>LastName1</b></td>
+                    <td bgcolor='lightgray'>${olddetail.LastName1}</td>
+                    <td>${newdetail.LastName1}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>MobileNumber1</b></td>
+                    <td bgcolor='lightgray'>${olddetail.MobileNumber1}</td>
+                    <td>${newdetail.MobileNumber1}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>FirstName2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.FirstName2}</td>
+                    <td>${newdetail.FirstName2}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>LastName2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.LastName2}</td>
+                    <td>${newdetail.LastName2}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>MobileNumber2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.MobileNumber2}</td>
+                    <td>${newdetail.MobileNumber2}"</td>
+        </tr>
+        <tr>
+            <td align="left"><b>PhoneNumber1</b></td>
+                    <td bgcolor='lightgray'>${olddetail.PhoneNumber1}</td>
+                    <td>${newdetail.PhoneNumber1}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>PhoneNumber2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.PhoneNumber2}</td>
+                    <td>${newdetail.PhoneNumber2}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Fax1</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Fax1}</td>
+                    <td>${newdetail.Fax1}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Fax2</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Fax2}</td>
+                    <td>${newdetail.Fax2}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Credit</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Credit}</td>
+                            <td>${newdetail.Credit}</td>
+        </tr>
+        <tr>
+            <td align="left"><b>Account_No</b></td>
+                    <td bgcolor='lightgray'>${olddetail.Account_No}</td>
+                    <td>${newdetail.Account_No}</td>
+        </tr>
+        </tbody></table>
+                                `;
+
+                    $("#EditSupplierDetail").append(EditSupplierDetail);
+                } else if (ApproveType == 7) {
+                    $("#ModalDeleteSupplier").modal('show');
+
+                }
+            });
+        });
+
+        function RejectEvent(IdModal) {
+            var Reason = $(IdModal).find("input").val();
+            $.post("/Store/Reject", { id: ID, approveType: ApproveType, Reason: Reason }).done(function (data) {
+                Approve.rows('.selected').remove().draw();
+                alert("RejectSuccess");
+                CloseModal(IdModal);
+                $('.modal').modal('hide');
+
+            });
+        }
+
+        function ApproveEvent(IdModal) {
+            var Reason = $(IdModal).find("input").val();
+            $.post("/Store/ApproveSuccess", { id: ID, approveType: ApproveType, Reason: Reason }).done(function (data) {
+                Approve.rows('.selected').remove().draw();
+                alert(data);
+                CloseModal(IdModal);
+                $('.modal').modal('hide');
+
+            });
+        }
+
+        function CloseModal(IdModal) {
+            $(IdModal).modal('hide');
+        }
+    </script>
+}

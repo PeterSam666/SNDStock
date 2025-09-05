@@ -1,0 +1,161 @@
+﻿  @using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Receive";
+    ViewData["activestore"] = "active";
+    ViewData["activeReceive"] = "active";
+    ViewData["openStore"] = "menu-open";
+}
+
+<div class="card  my-3">
+	<div class=" card-header">
+		<h3>Recieve</h3>
+		<label>SupplierID : <input id="supplierID" /></label><br />
+		<label>ของมาลงวันที่ : <input type="date" id="InputDate" /></label>
+	</div>
+	<div class="card-body">
+			<table border='0' width='100%'>
+				<tr>
+					<td width='50%' valign='top'>
+						<h3>ใส่ข้อมูล Part</h3>
+						<table border='1' width='250'>
+							<tr>
+								<td>Code</td>
+								<td><input type='text' id='part_code'></td>
+							</tr>
+							<tr>
+								<td>Qty.</td>
+								<td><input type='number' id='part_qty'></td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td>
+								<td>
+									<input type='button' onclick="add_PartQTY()" value=' เพิ่ม '>
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td valign='top' width='50%'>
+						<h3>รายการ</h3>
+						<textarea hidden id='tools_str' style='width:100%;' rows='5'></textarea>
+						<div id='show_detail'>ใส่ข้อมูลทางด้านซ้าย</div>
+					</td>
+				</tr>
+			</table>
+	</div>
+</div>
+
+@section Scripts{
+	<script>
+		$("#supplierID").focus();
+		function add_PartQTY(){
+			const code = $("#part_code").val();
+			const qty = $("#part_qty").val();
+			if (code == "") {
+				alert("กรุณากรอก Code");
+			}
+			else {
+				if (qty == "") {
+					alert("กรุณากรอก Qty");
+				}
+				else{
+					$.post("/Store/recieveDeatil", {
+						barcode: code, qty: qty
+					}, function(data) {
+						if (data.alert == "fail") {
+							alert("เพิ่มไม่สำเร็จ กรุณาเช็คบาร์โค๊ด");
+							$("#part_code").focus();
+						}
+						else{
+							var part = data.searchProduct;
+							var currentText = $('#tools_str').val(); // ดึงค่าปัจจุบันจาก textarea
+							var textadd = `${part.iD_Product}:${qty}`; // ข้อความที่ต้องการเพิ่ม
+
+							if (currentText === "") {
+								$('#tools_str').val(textadd); // ถ้า textarea ว่าง ให้เพิ่มข้อความใหม่
+							} else {
+								$('#tools_str').val(currentText + "," + textadd); // ถ้ามีค่าอยู่แล้ว ให้เพิ่มข้อความใหม่ต่อท้าย
+							}
+
+							show_detail(); // อัปเดตรายละเอียด
+
+						}
+					});
+				}
+			}
+		}
+
+		function show_detail() {
+			var str = document.getElementById('tools_str').value;
+			var data1 = str.split(",");
+			var row = data1.length;
+			var item = "";
+			var table_str = "<table border='1' width='50%'><tr><td align='center'><b>Code</b></td><td align='center'><b>Qty</b></td><td>ลบ</td></tr>";
+			for (var i = 0; i < row; i++) {
+				item = data1[i];
+				if (item != "") {
+					var dd2 = item.split(":");
+					table_str = table_str + "<tr><td align='center'>" + dd2[0] + "</td><td align='center'>" + dd2[1] + "</td><td><a href='javascript:void(0);' onclick='del_item(" + i + ");'>ลบ</a></td></tr>";
+				}
+			}
+			$("#part_code").val("");
+			$("#part_qty").val("");
+			table_str = table_str + "</table><br><br><input type='button' onclick='saveRecieve()' value=' บันทึกข้อมูล '>";
+			document.getElementById('show_detail').innerHTML = table_str;
+			$("#part_code").focus();
+		}
+
+		function del_item(item_no) {
+			var str = document.getElementById('tools_str').value;
+			var data = str.split(",");
+			var row = data.length;
+			var item = "";
+			var str1 = "";
+			for (var i = 0; i < row; i++) {
+				item = data[i];
+				if (i == item_no) {
+					$.post("/Store/deleteItemInRecieve", { barcode: item }, function (data) {
+
+					});
+				}
+				else
+					str1 = str1 + item + ",";
+				console.log("i = " + i + ", item_no = " + item_no + ", item = " + item + ", str1 = " + str1);
+			}
+			str1 = str1.replace(/^,|,$/g, "");
+			$('#tools_str').val(str1); // เพิ่มค่าใหม่
+
+
+			show_detail();
+		}
+
+		function saveRecieve() {
+			var supplierID = $("#supplierID").val();
+			var InputDate = $("#InputDate").val();
+			if (supplierID != "") {
+				if (InputDate != "") {
+					$.post("/Store/SaveRecieve", { supplierID: supplierID, InputDate: InputDate }, function (data) {
+						if (data == "Success") {
+							alert("บันทึกสำเร็จ");
+							$('#tools_str').val("");
+							$('#supplierID').val("");
+							$('#InputDate').val("");
+							$("#supplierID").focus();
+							show_detail();
+						}
+						else{
+							alert("บันทึกไม่สำเร็จ");
+						}
+					});
+				}
+				else {
+					alert("กรุณากรอกวันที่");
+				}
+			}
+			else{
+				alert("กรุณากรอก supplierID");
+			}
+			
+		}
+	</script>
+}

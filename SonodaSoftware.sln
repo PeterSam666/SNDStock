@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonodaSoftware", "SonodaSoftware\SonodaSoftware.csproj", "{A9549D6A-95E6-4039-A64E-97870E972524}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9549D6A-95E6-4039-A64E-97870E972524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9549D6A-95E6-4039-A64E-97870E972524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9549D6A-95E6-4039-A64E-97870E972524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9549D6A-95E6-4039-A64E-97870E972524}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3E0445D-66CF-4910-BEFC-058CDF63E74D}
+	EndGlobalSection
+EndGlobal

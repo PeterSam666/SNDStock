@@ -1,0 +1,378 @@
+﻿@using SonodaSoftware.Data
+@model User_UserBase
+@{
+    ViewData["Title"] = "AllUser";
+    ViewData["activeViewUser"] = "active";
+    ViewData["activeUsermanage"] = "active";
+    ViewData["openUser"] = "menu-open";
+    var user = ViewData["user"] as List<User_UserBase>;
+    var checkAccess = ViewData["checkAccess"] as string;
+    var Access = checkAccess.Contains("EditUser");
+}
+
+<label class="h3 my-2">Sonoda User</label>
+<div class="card">
+    <div class="card-body">
+        <table class="table" id="UserTable">
+            <thead>
+                <tr>
+                    <th hidden>ID</th>
+                    <th hidden>Photo</th>
+                    <th>BarCode</th>
+                    <th>Title</th>
+                    <th>FirstName_ENG</th>
+                    <th>LastName_ENG</th>
+                    <th>FirstName_TH</th>
+                    <th>LastName_TH</th>
+                    <th>Position_name</th>
+                    <th hidden>Position_ID</th>
+                    <th hidden>Department_type</th>
+                    <th>Department_name</th>
+                    <th hidden>Status</th>
+                    <th>Nickname</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(user != null)
+                {
+                    foreach (var item in user)
+                    {
+                        <tr>
+                            <td hidden>@item.ID</td>
+                            <td hidden>@item.Photo</td>
+                            <td>@item.BarCode</td>
+                            <td>@item.Title</td>
+                            <td>@item.FirstName_ENG</td>
+                            <td>@item.LastName_ENG</td>
+                            <td>@item.FirstName_TH</td>
+                            <td>@item.LastName_TH</td>
+                            <td>@item.Position_name</td>
+                            <td hidden>@item.Position_ID</td>
+                            <td hidden>@item.Department_type</td>
+                            <td>@item.Department_name</td>
+                            <td hidden>@item.Status</td>
+                            <td>@item.Nickname</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal Selection-->
+<div class="modal fade" id="ModalSelection" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">Do yo want to Edit User Information or Righths</label><br />
+                <button onclick="CloseModal('#ModalSelection')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                @* <label class="h3">Do yo want to Edit Userbase or Access</label><br /> *@
+                <div class="d-flex justify-content-between">
+                    <button id="UserBaseOpenBTN" class="btn btn-primary">User Information</button>
+                    <button id="AccessOpenBTN" class="btn btn-success">Righths</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal UserBase-->
+<div class="modal fade" id="ModalUserbase" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Information</h5>
+                <button onclick="CloseModal('#ModalUserbase')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="m-2 card card-blue">
+                    <div class="card-header">
+                        <label>User Information</label>
+                    </div>
+                    <div class="card-body">
+                        <form id="UserBaseForm">
+                            <label>Photo</label>
+                            <input type="file" /><br />
+                            <label>BarCode</label><br />
+                            <input asp-for="BarCode" readonly id="BarCode" class=" form-control" /><br />
+                            <div class="row">
+                                <div class="col-4 col-md-2">
+                                    <label>Title</label>
+                                    <input asp-for="Title" id="Title" class=" form-control" />
+                                </div>
+                                <div class="col-8 col-md-5">
+                                    <label>FirstNameEng</label><br />
+                                    <input asp-for="FirstName_ENG" id="FirstName_ENG" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <label>LastNameEng</label><br />
+                                    <input asp-for="LastName_ENG" id="LastName_ENG" class=" form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label>FirstNameTh</label><br />
+                                    <input asp-for="FirstName_TH" id="FirstName_TH" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>LastNameTh</label><br />
+                                    <input asp-for="LastName_TH" id="LastName_TH" class=" form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label>PositionName</label><br />
+                                    <input asp-for="Position_name" id="Position_name" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>PositionId</label><br />
+                                    <input asp-for="Position_ID" id="Position_ID" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>DepartmentType</label><br />
+                                    <input asp-for="Department_type" id="Department_type" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>DepartmentName</label><br />
+                                    <input asp-for="Department_name" id="Department_name" class=" form-control" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Nickname</label><br />
+                                    <input asp-for="Nickname" class="form-control" id="Nickname" />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Status</label><br />
+                                    <input asp-for="Status" class="form-control" id="Status" />
+                                </div>
+                                <button id="btnUserSave" class="btn btn-primary w-100 my-3">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Access-->
+<div class="modal fade" id="ModalAccess" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" id="exampleModalLabel">Righths</h5>
+                <button onclick="CloseModal('#ModalAccess')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    @* <div class="card">
+                        <div class="card-header">
+                            <label>AccessList</label>
+                        </div>
+                        <div class="card-body">
+                             <div>
+
+                             </div>
+                             <div>
+
+                             </div>
+                             <div>
+
+                             </div>
+                        </div>
+                    </div>
+                    <label class="h3"> reSelectAccess</label> *@
+                    <div class="card">
+                        <div class="card-header">
+                            <label>Store</label>
+                        </div>
+                        <div class="card-body row storeCheck">
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Part_Search" />
+                                <label>Part_Search</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Pick_Up" />
+                                <label>Pick_Up</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Store_Management" />
+                                <label>Store_Management</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Supplier_System" />
+                                <label>Supplier_System</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Approve" />
+                                <label>Approve</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="Report" />
+                                <label>Report</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" name="storechecked" value="ManagePickUp" />
+                                <label>ManagePickUp</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <label>Tool Inventory</label>
+                        </div>
+                        <div class="card-body row BorrowCheck">
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="Borrow" />
+                                <label>Borrow</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="Return" />
+                                <label>Return</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="History" />
+                                <label>History</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="EditTool" />
+                                <label>EditTool</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="Approve" />
+                                <label>Approve</label>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <input type="checkbox" value="ManageBorrow" />
+                                <label>ManageBorrow</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <label>Manage User</label>
+                        </div>
+                        <div class="card-body row UserCheck">
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="ViewUser" />
+                                <label>View User</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="EditUser" />
+                                <label>Edit User</label>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <input type="checkbox" value="SND_Organize" />
+                                <label>SND_Organize</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btnAccessSave" class="btn btn-success my-3 form-control">save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        var tableUser = new DataTable('#UserTable', {
+            scrollX: true,
+            autoWidth: false,
+            "columnDefs": [
+                { "className": "dt-left", "targets": "_all" }
+            ],
+            dom: 'Bftip',
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ]
+        });
+
+        $('#UserTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                tableUser.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            var barcode = $(this).find('td:nth-child(3)').html();
+            sessionStorage.setItem("barcode", barcode);
+            // $("#BarCode").val($(this).find('td:first-child').html());
+            $("#BarCode").val($(this).find('td:nth-child(3)').html());
+            $("#Title").val($(this).find('td:nth-child(4)').html());
+            $("#FirstName_ENG").val($(this).find('td:nth-child(5)').html());
+            $("#LastName_ENG").val($(this).find('td:nth-child(6)').html());
+            $("#FirstName_TH").val($(this).find('td:nth-child(7)').html());
+            $("#LastName_TH").val($(this).find('td:nth-child(8)').html());
+            $("#Position_name").val($(this).find('td:nth-child(9)').html());
+            $("#Position_ID").val($(this).find('td:nth-child(10)').html());
+            $("#Department_type").val($(this).find('td:nth-child(11)').html());
+            $("#Department_name").val($(this).find('td:nth-child(12)').html());
+            $("#Nickname").val($(this).find('td:nth-child(14)').html());
+            $("#Status").val($(this).find('td:nth-child(13)').html());
+            if ('@Access' == 'True') {
+                $('#ModalSelection').modal('show');
+            }
+        });
+
+        $("#UserBaseOpenBTN").click(function () {
+            $("#ModalUserbase").modal('show');
+        });
+
+        $("#AccessOpenBTN").click(function () {
+            var Barcode = sessionStorage.getItem("barcode");
+                $.get("/SNDUser/getAccess?Barcode=" + Barcode, function (data) {
+                    if (data != "") {
+                    for (var i = 0; i <= data.store.length; i++) {
+                            findCheckbox("storeCheck", data.store[i])
+                    }
+                    for (var i = 0; i <= data.tool.length; i++) {
+                        findCheckbox("BorrowCheck", data.tool[i])
+                    }
+                    for (var i = 0; i <= data.user.length; i++) {
+                        findCheckbox("UserCheck", data.user[i])
+                    }
+                    $("#ModalAccess").modal('show');
+                }
+            });
+        });
+
+        $("#btnAccessSave").click(function () {
+            var storeCheck = Array.from($(".storeCheck input[type=checkbox]"));
+            var storevalues = storeCheck.filter(x => x.checked).map(x => x.value);
+            var BorrowCheck = Array.from($(".BorrowCheck input[type=checkbox]"));
+            var Borrowvalues = BorrowCheck.filter(x => x.checked).map(x => x.value);
+            var UserCheck = Array.from($(".UserCheck input[type=checkbox]"));
+            var Uservalues = UserCheck.filter(x => x.checked).map(x => x.value);
+            var valueAccess = [storevalues, Borrowvalues, Uservalues];
+            var barcode = sessionStorage.getItem("barcode");
+            $.post("/SNDUser/EditAccess", { valueAccess, barcode }).done(function (data) {
+                if (data) {
+                    alert("EditAccess Success");
+                }
+                else {
+                    alert("Please click Access to All group.")
+                }
+            });
+        })
+
+        $("#btnUserSave").click(function () {
+            $("#UserBaseForm").attr('action', '/SNDUser/EditUserBase');
+            $("#UserBaseForm").submit();
+        })
+        function CloseModal(IdModal) {
+            $(IdModal).modal('hide');
+        }
+
+        function findCheckbox(className, value) {
+            $(`.${className}`).find(`input[value="${value}"]`).prop('checked', true);
+        }
+
+    </script>
+}

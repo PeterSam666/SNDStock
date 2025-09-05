@@ -1,0 +1,471 @@
+﻿@using SonodaSoftware.Data
+@model Store_AddPart
+@{
+    ViewBag.Title = "PartSearch";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "PartSearch";
+    ViewData["activestore"] = "active";
+    ViewData["activepartseach"] = "active";
+    ViewData["openStore"] = "menu-open";
+    var part = ViewData["part"] as List<Store_Part>;
+}
+<main class="content">
+    <form id="Partsearch">
+        <div class="my-3">
+            <label id="labelSearchBy"></label>
+            <select id="SearchBy" name="SearchBy">
+                <option>ID</option>
+                <option>Barcode_ID</option>
+                <option>NAME_PRODUCT_ENG</option>
+                <option>NAME_PRODUCT_TH</option>
+                <option>Location</option>
+            </select>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <input id="keyword" name="keyword" class="form-control my-3" />
+                <button id="search" class="btn btn-primary"></button>
+            </div>
+        </div>.
+    </form>
+    <div class="d-flex justify-content-end">
+        <button id="btnAddPart" class="btn btn-success my-3">Add Part</button>
+    </div>
+    <div id="tabledataEng" class="card">
+        <div class="card-body">
+            <table id="tableEng" class="table">
+                <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th>ID_PRODUCT</th>
+                        <th>NAME_PRODUCT_ENG</th>
+                        <th>NAME_PRODUCT_TH</th>
+                        <th hidden>MAKER</th>
+                        <th>QUANTITY</th>
+                        <th>UNIT</th>
+                        <th hidden>UNIT_PRICE</th>
+                        <th hidden>Description</th>
+                        <th>Location</th>
+                        <th hidden>Created_On</th>
+                        <th hidden>Modify_On</th>
+                        <th hidden>Status</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (part != null)
+                    {
+                        foreach (var item in part)
+                        {
+                            <tr>
+                                <td hidden>@item.ID</td>
+                                <td>@item.ID_Product</td>
+                                <td>@item.NAME_PRODUCT_ENG</td>
+                                <td>@item.NAME_PRODUCT_TH</td>
+                                <td hidden>@item.MAKER</td>
+                                <td>@item.QUANTITY</td>
+                                <td>@item.UNIT</td>
+                                <td hidden>@item.UNIT_PRICE</td>
+                                <td hidden>@item.Description</td>
+                                <td>@item.Location</td>
+                                <td hidden>@item.Created_On</td>
+                                <td hidden>@item.Modify_On</td>
+                                <td hidden>@item.status</td>
+                                <td><button class=" btn btn-secondary" onclick="EditPart(@item.ID)">Edit</button></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="tabledataThai" class="card">
+        <div class="card-body">
+            <table id="tableThai" class="table">
+                <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th>ไอดีสินค้า</th>
+                        <th>ชื่อสินค้าภาษาอังกฤษ</th>
+                        <th>ชื่อสินค้าภาษาไทย</th>
+                        <th hidden>MAKER</th>
+                        <th>จำนวนที่เหลือ</th>
+                        <th>หน่วย</th>
+                        <th hidden>UNIT_PRICE</th>
+                        <th hidden>Description</th>
+                        <th>ตำแหน่ง</th>
+                        <th hidden>Created_On</th>
+                        <th hidden>Modify_On</th>
+                        <th hidden>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (part != null)
+                    {
+                        foreach (var item in part)
+                        {
+                            <tr>
+                                <td hidden>@item.ID</td>
+                                <td>@item.ID_Product</td>
+                                <td>@item.NAME_PRODUCT_ENG</td>
+                                <td>@item.NAME_PRODUCT_TH</td>
+                                <td hidden>@item.MAKER</td>
+                                <td>@item.QUANTITY</td>
+                                <td>@item.UNIT</td>
+                                <td hidden>@item.UNIT_PRICE</td>
+                                <td hidden>@item.Description</td>
+                                <td>@item.Location</td>
+                                <td hidden>@item.Created_On</td>
+                                <td hidden>@item.Modify_On</td>
+                                <td hidden>@item.status</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="tabledataJapan" class="card">
+        <div class="card-body">
+            <table id="tableJapan" class="table">
+                <thead>
+                    <tr>
+                        <th hidden>ID</th>
+                        <th>商品ID</th>
+                        <th>英語の商品名</th>
+                        <th>タイ語の商品名</th>
+                        <th hidden>MAKER</th>
+                        <th>量数</th>
+                        <th>単位</th>
+                        <th hidden>UNIT_PRICE</th>
+                        <th hidden>Description</th>
+                        <th>位置</th>
+                        <th hidden>Created_On</th>
+                        <th hidden>Modify_On</th>
+                        <th hidden>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (part != null)
+                    {
+                        foreach (var item in part)
+                        {
+                            <tr>
+                                <td hidden>@item.ID</td>
+                                <td>@item.ID_Product</td>
+                                <td>@item.NAME_PRODUCT_ENG</td>
+                                <td>@item.NAME_PRODUCT_TH</td>
+                                <td hidden>@item.MAKER</td>
+                                <td>@item.QUANTITY</td>
+                                <td>@item.UNIT</td>
+                                <td hidden>@item.UNIT_PRICE</td>
+                                <td hidden>@item.Description</td>
+                                <td>@item.Location</td>
+                                <td hidden>@item.Created_On</td>
+                                <td hidden>@item.Modify_On</td>
+                                <td hidden>@item.status</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Modal AddPart-->
+<form asp-action="AddPart">
+    <div class="modal fade" id="ModalAddPart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="h3">Add Part</label><br />
+                    <button onclick="closeModal('#ModalAddPart')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-body row row-cols-2">
+                                <label class="px-2">ID_Product  <input class="form-control mx-2" asp-for="ID_Product" required /></label>
+                                <label class="px-2">PartGroupType <input class="form-control" asp-for="PartGroupType" required /></label>
+                                <label class="px-2">NAME_PRODUCT_ENG <input class="form-control" asp-for="NAME_PRODUCT_ENG" /></label>
+                                <label class="px-2">NAME_PRODUCT_TH <input class="form-control" asp-for="NAME_PRODUCT_TH" /></label>
+                                <label class="px-2">SupplierID <input class="form-control" asp-for="SupplierID" /></label>
+                                <label class="px-2">QUANTITY <input class="form-control" asp-for="QUANTITY" /></label>
+                                <label class="px-2">UNIT <input class="form-control" asp-for="UNIT" /></label>
+                                <label class="px-2">UNIT_PRICE <input class="form-control" asp-for="UNIT_PRICE" /></label>
+                                <label class="px-2">Description <input class="form-control" asp-for="Description" /></label>
+                                <label class="px-2">Location <input class="form-control" asp-for="Location" /></label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary form-control mt-2">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="ModalEditPart" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="h3">Edit Part</label><br />
+                <button onclick="closeModal('#ModalEditPart')" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="card">
+                    <div class="card-body row row-cols-2">
+                        <label class="px-2">ID_Product  <input class="form-control" required id="ID_Product_2" /></label>
+                        <label class="px-2">NAME_PRODUCT_ENG <input class="form-control" id="NAME_PRODUCT_ENG_2" /></label>
+                        <label class="px-2">NAME_PRODUCT_TH <input class="form-control" id="NAME_PRODUCT_TH_2" /></label>
+                        <label class="px-2">SupplierID <input class="form-control" id="SupplierID_2" /></label>
+                        <label class="px-2">QUANTITY <input class="form-control" id="QUANTITY_2" /></label>
+                        <label class="px-2">UNIT <input class="form-control" id="UNIT_2" /></label>
+                        <label class="px-2">UNIT_PRICE <input class="form-control" id="UNIT_PRICE_2" /></label>
+                        <label class="px-2">Description <input class="form-control" id="Description_2" /></label>
+                        <label class="px-2">Location <input class="form-control" id="Location_2" /></label>
+                    </div>
+                </div>
+                <button onclick="SaveEdit()" class="btn btn-primary form-control mt-2">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        var IDPart;
+        if ('@TempData["AddPart"]' != "") {
+            alert('@TempData["AddPart"]');
+        }
+        var select = document.getElementById('SearchBy')
+        var table = new DataTable('#tableEng', {
+            scrollX: true,
+            autoWidth: false,
+            pageLength: 7,
+            dom: 'Bfrtip', // เพิ่มสำหรับแสดงปุ่ม
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Export CSV',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Export Excel',
+                    className: 'btn btn-sm btn-outline-success'
+                }
+            ]
+        });
+        var table = new DataTable('#tableThai', {
+            scrollX: true,
+            autoWidth: false,
+            pageLength: 7,
+            "language": {
+                "sProcessing": "กำลังดำเนินการ...",
+                "sLengthMenu": "แสดง_MENU_ แถว",
+                "sZeroRecords": "ไม่พบข้อมูล",
+                "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sInfoPostFix": "",
+                "sSearch": "ค้นหา:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "เริ่มต้น",
+                    "sPrevious": "ก่อนหน้า",
+                    "sNext": "ถัดไป",
+                    "sLast": "สุดท้าย"
+                }
+            }
+        });
+
+        var table = new DataTable('#tableJapan', {
+            scrollX: true,
+            autoWidth: false,
+            pageLength: 7,
+            "language": {
+                "sProcessing": "処理中...",
+                "sLengthMenu": "ショー_MENU_ ライン",
+                "sZeroRecords": "ご指定の検索条件に該当する商品はみつかりませんでした",
+                "sInfo": "_START_ 行中  _END_ から  _TOTAL_ までを表示",
+                "sInfoEmpty": "0 件中 0 〜 0 件表示",
+                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sInfoPostFix": "",
+                "sSearch": "検索ボックス:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "เริ่มต้น",
+                    "sPrevious": "前のページ",
+                    "sNext": "次のページ",
+                    "sLast": "สุดท้าย"
+                }
+            }
+        });
+        var language = sessionStorage.getItem("language");
+        if (language != null) {
+            changelanguage(language);
+        }
+        else {
+            changelanguage('English');
+        }
+        function changelanguage(lang) {
+            //Thai
+            if (lang == 'Thai') {
+                $("#Logout").html('ออกจากระบบ');
+                $("#PartSearchPage").html('ค้นหาสินค้า');
+                $("#PickUpPage").html('เบิกสินค้า');
+                $("#ViewHistoryPage").html('ประวัติการเบิก');
+                $("#search").html('ค้นหา');
+                $("#labelSearchBy").html('ค้นหาด้วย');
+                $("#SearchBy").empty();
+                $('#SearchBy').append($('<option>', {
+                    value: 'ID',
+                    text: 'ไอดี'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'Barcode_ID',
+                    text: 'บาร์โค๊ดไอดี'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_ENG',
+                    text: 'ชื่อสินค้าภาษาอังกฤษ'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_TH',
+                    text: 'ชื่อสินค้าภาษาไทย'
+                }));
+                $("#tabledataEng").hide();
+                $("#tabledataThai").show();
+                $("#tabledataJapan").hide();
+            }
+            //English
+            else if (lang == 'English') {
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('Part Search');
+                $("#PickUpPage").html('Pick Up Item');
+                $("#ViewHistoryPage").html('View History');
+                $("#search").html('Search');
+                $("#labelSearchBy").html('SearchBy');
+                $("#SearchBy").empty();
+                $('#SearchBy').append($('<option>', {
+                    value: 'ID',
+                    text: 'ID'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'Barcode_ID',
+                    text: 'Barcode_ID'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_ENG',
+                    text: 'NAME_PRODUCT_ENG'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_TH',
+                    text: 'NAME_PRODUCT_TH'
+                }));
+                 $('#SearchBy').append($('<option>', {
+                    value: 'Location',
+                    text: 'Location'
+                }));
+                $("#tabledataThai").hide();
+                $("#tabledataEng").show();
+                $("#tabledataJapan").hide();
+            }
+            //Japanese
+            else if (lang == 'Japanese') {
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('パーツ検索');
+                $("#PickUpPage").html('ピックアップ');
+                $("#ViewHistoryPage").html('ピックアップ履歴');
+                $("#search").html('検索');
+                $("#labelSearchBy").html('検索');
+                $("#SearchBy").empty();
+                $('#SearchBy').append($('<option>', {
+                    value: 'ID',
+                    text: 'ID'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'Barcode_ID',
+                    text: 'バーコードID'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_ENG',
+                    text: '英語の商品名'
+                }));
+                $('#SearchBy').append($('<option>', {
+                    value: 'NAME_PRODUCT_TH',
+                    text: 'タイ語の商品名'
+                }));
+                $("#tabledataThai").hide();
+                $("#tabledataEng").hide();
+                $("#tabledataJapan").show();
+            }
+            sessionStorage.removeItem("language");
+            sessionStorage.setItem("language", lang);
+        }
+        var searchby = sessionStorage.getItem("select");
+        //$("#SearchBy option[value=" + searchby +"]").attr("selected", "selected");
+        $("#SearchBy option").each(function () {
+            if ($(this).text() == searchby)
+                $(this).attr("selected", "selected");
+        });
+        $("#SearchBy").change(function () {
+            sessionStorage.setItem("select", $(this).find(":selected").text())
+        });
+
+        //$("#tabledata").hide();
+        $("#search").on('click', function () {
+            $("#Partsearch").attr('action', '/Store/partsearchResult');
+        @*@if(part != null)
+            {
+            <% $("#tabledata").show();/>
+            }*@
+                });
+        $("#btnAddPart").click(function () {
+            $('#ModalAddPart').modal('show');
+        });
+        function EditPart(ID) {
+            IDPart = ID;
+            $.get("/Store/Editpart?ID=" + ID, function (data) {
+                if (data != "") {
+                    $('#ModalEditPart').modal('show');
+                    $("#ID_Product_2").val(data.iD_Product);
+                    $("#NAME_PRODUCT_ENG_2").val(data.namE_PRODUCT_ENG);
+                    $("#NAME_PRODUCT_TH_2").val(data.namE_PRODUCT_TH);
+                    $("#SupplierID_2").val(data.supplierID_2);
+                    $("#QUANTITY_2").val(data.quantity);
+                    $("#UNIT_2").val(data.unit);
+                    $("#UNIT_PRICE_2").val(data.uniT_PRICE);
+                    $("#Location_2").val(data.location);
+                }
+            });
+        }
+        function closeModal(modal) {
+            $(modal).modal('hide');
+        }
+
+        function SaveEdit() {
+            var Store_Part = {
+                id: IDPart,
+                iD_Product: $("#ID_Product_2").val(),
+                namE_PRODUCT_ENG: $("#NAME_PRODUCT_ENG_2").val(),
+                namE_PRODUCT_TH: $("#NAME_PRODUCT_TH_2").val(),
+                quantity: $("#QUANTITY_2").val(),
+                unit: $("#UNIT_2").val(),
+                uniT_PRICE: $("#UNIT_PRICE_2").val(),
+                location: $("#Location_2").val()
+            }
+            $.post("/Store/SaveEditpart", { EditPart: Store_Part }, function (data) {
+                alert(data);
+            });
+        }
+    </script>
+}
+
+

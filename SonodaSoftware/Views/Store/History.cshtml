@@ -1,0 +1,411 @@
+﻿
+@{
+    ViewData["Title"] = "History";
+    ViewData["activestore"] = "active";
+    ViewData["activehistory"] = "active";
+    ViewData["openStore"] = "menu-open";
+}
+
+@using SonodaSoftware.Data
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.history = "active";
+    var HistoryPickUp = ViewData["pickup_his"] as List<Store_PickUp>;
+    var dateNow = DateTime.Now.ToString("dd/MM/yyyy");
+}
+<main class="content">
+    <form id="History">
+        <div class="d-flex justify-content-end my-2 mb-3">
+            <div>
+                <label class="mb-3 mx-2"><label id="startLabel"></label> <input name="dateStart" id="dateStart" /></label>
+                <label class="mb-3 mx-2"><label id="endLabel"></label> <input name="dateEnd" id="dateEnd" /></label>
+                <button id="view" class="btn btn-outline-secondary mb-3 mx-2">View</button>
+            </div>
+        </div>
+        <div class="card mt-2" id="EngShowdata">
+            <div class="card-body">
+                <table class="table" id="tableDataEng">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th>Date</th>
+                            <th>Job</th>
+                            <th>Machine_Code</th>
+                            <th>User_ID</th>
+                            <th>Reveal_Name</th>
+                            <th>Description</th>
+                            <th>Total</th>
+                            <th>Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (HistoryPickUp != null)
+                        {
+                            foreach (var item in HistoryPickUp)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Job</td>
+                                    <td>@item.Machine_Code</td>
+                                    <td>@item.User_ID</td>
+                                    <td>@item.Reveal_Name</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.Total</td>
+                                    <td>@item.Remark</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card mt-2" id="ThaiShowdata">
+            <div class="card-body">
+                <table class="table" id="tableDataThai">
+                    <thead>
+                        <tr>
+                            <th hidden>ไอดี</th>
+                            <th>วันที่</th>
+                            <th>ชื่องาน</th>
+                            <th>รหัสเครื่องจักร</th>
+                            <th>รหัสพนักงาน</th>
+                            <th>ชื่อพนักงาน</th>
+                            <th>รายละเอียด</th>
+                            <th>ทั้งหมด</th>
+                            <th>หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (HistoryPickUp != null)
+                        {
+                            foreach (var item in HistoryPickUp)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Job</td>
+                                    <td>@item.Machine_Code</td>
+                                    <td>@item.User_ID</td>
+                                    <td>@item.Reveal_Name</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.Total</td>
+                                    <td>@item.Remark</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card mt-2" id="JapanShowdata">
+            <div class="card-body">
+                <table class="table" id="tableDataJapan">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th>日付</th>
+                            <th>ジョブ</th>
+                            <th>マシンコード</th>
+                            <th>ユーザーID</th>
+                            <th>社員名</th>
+                            <th>デスクリプション</th>
+                            <th>合計</th>
+                            <th>リマーク</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (HistoryPickUp != null)
+                        {
+                            foreach (var item in HistoryPickUp)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Job</td>
+                                    <td>@item.Machine_Code</td>
+                                    <td>@item.User_ID</td>
+                                    <td>@item.Reveal_Name</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.Total</td>
+                                    <td>@item.Remark</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal fade" id="DetailModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <label id="historyDetail"></label>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table" id="Detail">
+                            <thead>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</main>
+
+@section scripts {
+    <script>
+        var language = sessionStorage.getItem("language");
+        if (language != null) {
+            changelanguage(language);
+        }
+        else {
+            changelanguage('English');
+        }
+        function changelanguage(lang) {
+            //Thai
+            if (lang == 'Thai') {
+                $("#historyDetail").html('รายละเอียดการเบิก');
+                $("#Logout").html('ออกจากระบบ');
+                $("#PartSearchPage").html('ค้นหาสินค้า');
+                $("#PickUpPage").html('เบิกสินค้า');
+                $("#ViewHistoryPage").html('ประวัติการเบิก');
+                $("#startLabel").html('ตั้งแต่วันที่: ');
+                $("#endLabel").html('ถึงวันที่: ');
+                $("#view").html('แสดง');
+                $("#ThaiShowdata").show();
+                $("#EngShowdata").hide();
+                $("#JapanShowdata").hide();
+            }
+            //English
+            else if (lang == 'English') {
+                $("#historyDetail").html('Pick Up Detail');
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('Part Search');
+                $("#PickUpPage").html('Pick Up Item');
+                $("#ViewHistoryPage").html('View History');
+                $("#startLabel").html('StartDate: ');
+                $("#endLabel").html('EndDate: ');
+                $("#view").html('View');
+                $("#ThaiShowdata").hide();
+                $("#EngShowdata").show();
+                $("#JapanShowdata").hide();
+            }
+            //Japanese
+            else if (lang == 'Japanese') {
+                $("#historyDetail").html('受け取り詳細');
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('パーツ検索');
+                $("#PickUpPage").html('ピックアップ');
+                $("#ViewHistoryPage").html('ピックアップ履歴');
+                $("#startLabel").html('開始日 : ');
+                $("#endLabel").html('終了日 : ');
+                $("#view").html('検索');
+                $("#ThaiShowdata").hide();
+                $("#JapanShowdata").show();
+                $("#EngShowdata").hide();
+            }
+            sessionStorage.removeItem("language");
+            sessionStorage.setItem("language", lang);
+        }
+        var start = "@dateNow";
+        var end = "@dateNow";
+        $("#dateStart").datepicker({
+            dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var date1 = $('#dateStart').datepicker('getDate');
+                var date = new Date(Date.parse(date1));
+                date.setDate(date.getDate() + 1);
+                var newDate = date.toDateString();
+                newDate = new Date(Date.parse(newDate));
+                $('#dateEnd').datepicker("option", "minDate", newDate);
+            }
+        });
+        $("#dateEnd").datepicker({
+            dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var date1 = $('#dateEnd').datepicker('getDate');
+                var date = new Date(Date.parse(date1));
+                date.setDate(date.getDate() + 1);
+                var newDate = date.toDateString();
+                newDate = new Date(Date.parse(newDate));
+                $('#dateStart').datepicker("option", "maxDate", newDate);
+            }
+        });
+        $("#dateStart").val("@dateNow");
+        $("#dateEnd").val("@dateNow");
+
+        var datestart = sessionStorage.getItem("dateStart");
+        var dateend = sessionStorage.getItem("dateEnd");
+        if (!(datestart == null || dateend == null)) {
+            $("#dateStart").val(datestart);
+            $("#dateEnd").val(dateend);
+            sessionStorage.removeItem("dateStart");
+            sessionStorage.removeItem("dateEnd");
+        }
+
+        var table0 = new DataTable('#tableDataEng', {
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip',
+            buttons: [{ extend: 'csv', filename: "history_@dateNow" },
+                { extend: 'print', filename: "history_@dateNow" },
+                { extend: 'excel', filename: "history_@dateNow" }]
+
+        });
+
+        var table1 = new DataTable('#tableDataThai', {
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip',
+            buttons: [{ extend: 'csv', filename: "history_@dateNow" },
+                      { extend: 'print', filename: "history_@dateNow" },
+                      { extend: 'excel', filename: "history_@dateNow" }],
+            "language": {
+                "sProcessing": "กำลังดำเนินการ...",
+                "sLengthMenu": "แสดง_MENU_ แถว",
+                "sZeroRecords": "ไม่พบข้อมูล",
+                "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sInfoPostFix": "",
+                "sSearch": "ค้นหา:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "เริ่มต้น",
+                    "sPrevious": "ก่อนหน้า",
+                    "sNext": "ถัดไป",
+                    "sLast": "สุดท้าย"
+                }
+            }
+
+        });
+        var table2 = new DataTable('#tableDataJapan', {
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip',
+            buttons: [{ extend: 'csv', filename: "history_@dateNow" },
+                  { extend: 'print', filename: "history_@dateNow" },
+                  { extend: 'excel', filename: "history_@dateNow" }],
+            "language": {
+                    "sProcessing": "処理中...",
+                    "sLengthMenu": "ショー_MENU_ ライン",
+                    "sZeroRecords": "ご指定の検索条件に該当する商品はみつかりませんでした",
+                    "sInfo": "_START_ 行中  _END_ から  _TOTAL_ までを表示",
+                    "sInfoEmpty": "0 件中 0 〜 0 件表示",
+                    "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                    "sInfoPostFix": "",
+                    "sSearch": "検索ボックス:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "เริ่มต้น",
+                        "sPrevious": "前のページ",
+                        "sNext": "次のページ",
+                        "sLast": "สุดท้าย"
+                    }
+            }
+        });
+
+        $("#view").click(function () {
+            sessionStorage.setItem("dateStart", $("#dateStart").val());
+            sessionStorage.setItem("dateEnd", $("#dateEnd").val());
+            $("#History").attr('action', '/home/SearchHistory');
+            $("#History").submit();
+        });
+        var IDPickUpForDetail = "";
+        $('#tableDataEng tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table0.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                IDPickUpForDetail = $(this).find('td:first-child').html();
+                $.get("/home/ViewDetail?ID=" + IDPickUpForDetail, function (data) {
+                    $("#Detail tr").detach();
+                    var headTable = Object.keys(data[0]);
+                    var $thead = $('#Detail').find('thead');
+                    var $tr = $("<tr>");
+                    $.each(headTable, function (name, value) {
+                        if (name != 0 & name != 2 & name != 5 & name != 6) {
+                            $tr.append('<th>' + value + '</th>');
+                        }
+                    });
+                    $thead.append($tr);
+                    var $tbody = $('#Detail').find('tbody');
+                    $.each(data, function (name, value) {
+                        var dataValue = Object.values(value);
+                        var $trBody = $("<tr>");
+                        $trBody.append('<td>' + dataValue[1] + '</td>');
+                        $trBody.append('<td>' + dataValue[3] + '</td>');
+                        $trBody.append('<td>' + dataValue[4] + '</td>');
+                        $tbody.append($trBody);
+                    });
+                    $('#DetailModal').modal('show');
+                });
+            }
+        });
+        $('#tableDataThai tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table1.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                IDPickUpForDetail = $(this).find('td:first-child').html();
+                $.get("/home/ViewDetail?ID=" + IDPickUpForDetail, function (data) {
+                    $("#Detail tr").detach();
+                    var $thead = $('#Detail').find('thead');
+                    var $tr = $("<tr>");
+                    $tr.append('<th>' + 'บาร์โค๊ดไอดี' + '</th>');
+                    $tr.append('<th>' + 'ชื่อสินค้า' + '</th>');
+                    $tr.append('<th>' + 'จำนวน' + '</th>');
+                    $thead.append($tr);
+                    var $tbody = $('#Detail').find('tbody');
+                    $.each(data, function (name, value) {
+                        var dataValue = Object.values(value);
+                        var $trBody = $("<tr>");
+                        $trBody.append('<td>' + dataValue[1] + '</td>');
+                        $trBody.append('<td>' + dataValue[2] + '</td>');
+                        $trBody.append('<td>' + dataValue[4] + '</td>');
+                        $tbody.append($trBody);
+                    });
+                    $('#DetailModal').modal('show');
+                });
+            }
+        });
+        $('#tableDataJapan tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table2.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                IDPickUpForDetail = $(this).find('td:first-child').html();
+                $.get("/home/ViewDetail?ID=" + IDPickUpForDetail, function (data) {
+                    $("#Detail tr").detach();
+                    var $thead = $('#Detail').find('thead');
+                    var $tr = $("<tr>");
+                    $tr.append('<th>' + 'バーコードID' + '</th>');
+                    $tr.append('<th>' + '英語の商品名' + '</th>');
+                    $tr.append('<th>' + '数量' + '</th>');
+                    $thead.append($tr);
+                    var $tbody = $('#Detail').find('tbody');
+                    $.each(data, function (name, value) {
+                        var dataValue = Object.values(value);
+                        var $trBody = $("<tr>");
+                        $trBody.append('<td>' + dataValue[1] + '</td>');
+                        $trBody.append('<td>' + dataValue[3] + '</td>');
+                        $trBody.append('<td>' + dataValue[4] + '</td>');
+                        $tbody.append($trBody);
+                    });
+                    $('#DetailModal').modal('show');
+                });
+            }
+        });
+    </script>
+}
+
+
+

@@ -1,0 +1,349 @@
+﻿@using SonodaSoftware.Data
+
+@{
+    ViewData["Title"] = "Pickup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["activeJobmanage"] = "active";
+    ViewData["activePickupJob"] = "active";
+    ViewData["openJob"] = "menu-open";
+    var job = ViewData["jobName"] as List<Job_NameJob>;
+}
+
+<div>
+    <div class="p-3">
+        <label class="m-2">
+            select Job :
+            <input list="Job" id="NAME_Job" name="JobName">
+            <datalist id="Job" class="mx-4">
+                <option value="" />
+                @if (job != null)
+                {
+                    foreach (var item in job)
+                    {
+                        <option value="@item.JobName" />
+                    }
+                }
+            </datalist>
+        </label>
+        <label class="m-2"> 
+            Search BarCode : 
+            <input id="BarCode" name="BarCode" type="text" aria-label="Recipient's username" aria-describedby="button-addon2">
+        </label>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-7">
+            <div class=" card p-3 mx-3">
+                <table id="tablePart" class="table table-bordered table-hover display w-100">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th>Barcode</th>
+                            <th>PartNameEng</th>
+                            <th>PartNameThai</th>
+                            <th>Quantity</th>
+                            <th hidden>JobID</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="col-12 col-md-5">
+            <div class="mx-3 p-3 card">
+                <div class="text-center card-header">
+                    <label>Part Detail</label>
+                </div>
+
+                <label hidden>
+                    ID :
+                    <input type="text" id="PartID" value="" readonly />
+                </label>
+                <label>
+                    Barcode :
+                    <input type="text" readonly id="Barcode" class="form-control" />
+                </label>
+                <label>
+                    PartNameEng :
+                    <input type="text" readonly id="PartNameEng" class="form-control" />
+                </label>
+                <label>
+                    PartNameThai :
+                    <input type="text" readonly id="PartNameThai" class="form-control" />
+                </label>
+                <label>
+                    Quantity :
+                    <input type="number"  id="Quantity" class="form-control" />
+                </label>
+                <label hidden>
+                    JobID :
+                    <input type="text" value="" readonly id="JobID" class="form-control" />
+                </label>
+                <label>
+                    Location :
+                    <input type="text" readonly id="Location" class="form-control" />
+                </label>
+
+                <div class="mt-3 d-flex justify-content-between">
+                    <button class="btn btn-primary" onclick="addToList()">Add to List</button>
+                    <button class="btn btn-info" onclick="viewPickupList()">View Pickup List</button>
+                    <button class="btn btn-success" onclick="openPickupModal()">Pickup</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Pickup -->
+<div class="modal fade" id="pickupModal" tabindex="-1" aria-labelledby="pickupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pickupModalLabel">Confirm Pickup</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="barcodeInput" class="form-label">Barcode หรือเว้นว่างถ้าใช้ session</label>
+                <input type="text" id="barcodeInput" class="form-control" placeholder="Scan หรือกรอก Barcode">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-primary" onclick="pickup()">ยืนยัน Pickup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Pickup List -->
+<div class="modal fade" id="pickupListModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pickup List</h5>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="pickupListBody">
+                <!-- List items will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var jobList = @Html.Raw(Json.Serialize(job));
+        var dataTable;
+
+        $(document).ready(function () {
+            // สร้าง DataTable
+            dataTable = $('#tablePart').DataTable({
+                responsive: true,
+                scrollX: true,
+                language: {
+                    search: "ค้นหา:",
+                    lengthMenu: "แสดง _MENU_ รายการ",
+                    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+                    paginate: {
+                        previous: "ก่อนหน้า",
+                        next: "ถัดไป"
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: [0, 5], // ซ่อน column index 0 (ID) และ 5 (JobID)
+                        visible: false,
+                        searchable: false
+                    }
+                ]
+            });
+
+
+            // คลิกแถวใน DataTable
+            $('#tablePart tbody').on('click', 'tr', function () {
+                // ลบ .selected ออกจากแถวอื่น
+                $('#tablePart tbody tr').removeClass('selected');
+
+                // ใส่ .selected กับแถวที่คลิก
+                $(this).addClass('selected');
+
+                const data = dataTable.row(this).data();
+
+                if (data) {
+                    $("#PartID").val(data[0]);
+                    $("#Barcode").val(data[1]);
+                    $("#PartNameEng").val(data[2]);
+                    $("#PartNameThai").val(data[3]);
+                    $("#Quantity").val(data[4]);
+                    $("#Quantity").attr("max", data[4]);
+                    $("#Location").val(data[6]);
+                    $("#JobID").val(data[5]);
+                }
+            });
+
+
+            // เมื่อเปลี่ยนชื่อ Job
+            $("#NAME_Job").change(function () {
+                const selectedName = $(this).val().trim();
+                const selectedJob = jobList.find(j => j.jobName === selectedName);
+
+                if (!selectedJob) {
+                    alert("ไม่พบงานที่เลือก");
+                    return;
+                }
+
+                const jobId = selectedJob.id;
+
+                // ดึงข้อมูล Part
+                $.get("/Job/GetpartbyJob", { jobId: jobId }, function (parts) {
+                    // ล้างข้อมูลใน DataTable
+                    dataTable.clear();
+
+                    if (!parts || parts.length === 0) {
+                        dataTable.draw(); // ล้างหน้าจอ
+                        return;
+                    }
+
+                    // เพิ่มข้อมูลใหม่
+                    parts.forEach(part => {
+                        dataTable.row.add([
+                            part.id,
+                            part.barcode,
+                            part.partNameEng,
+                            part.partNameThai,
+                            part.quantity,
+                            part.jobID,
+                            part.location
+                        ]);
+                    });
+
+                    dataTable.draw();
+                });
+            });
+        });
+
+
+        const pickupList = [];
+
+        function addToList() {
+            const quantityInput = document.getElementById('Quantity');
+            const quantityValue = parseInt(quantityInput?.value?.trim());
+            const maxQuantity = parseInt(quantityInput?.getAttribute('max'));
+
+            const part = {
+                id: document.getElementById('PartID')?.value?.trim(),
+                barcode: document.getElementById('Barcode')?.value?.trim(),
+                partNameEng: document.getElementById('PartNameEng')?.value?.trim(),
+                partNameThai: document.getElementById('PartNameThai')?.value?.trim(),
+                quantity: quantityValue,
+                jobID: document.getElementById('JobID')?.value?.trim(),
+                location: document.getElementById('Location')?.value?.trim(),
+            };
+
+            // ตรวจสอบว่าทุก field มีค่าครบ
+            if (!part.id || !part.barcode || !part.partNameEng || !part.partNameThai || !part.quantity || !part.location || !part.jobID) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนเพิ่มในรายการ');
+                return;
+            }
+
+            // ตรวจสอบว่า quantity อยู่ในช่วงที่อนุญาต
+            if (isNaN(quantityValue) || quantityValue < 1) {
+                alert('Quantity ต้องไม่น้อยกว่า 1');
+                return;
+            }
+
+            if (maxQuantity && quantityValue > maxQuantity) {
+                alert(`Quantity ต้องไม่เกิน ${maxQuantity}`);
+                return;
+            }
+
+            pickupList.push(part);
+            alert('เพิ่มรายการเรียบร้อยแล้ว!');
+
+            // ✅ ล้างค่า input
+            document.getElementById('PartID').value = "";
+            document.getElementById('Barcode').value = "";
+            document.getElementById('PartNameEng').value = "";
+            document.getElementById('PartNameThai').value = "";
+            document.getElementById('Quantity').value = "";
+            document.getElementById('Quantity').removeAttribute('max'); // เคลียร์ max ด้วย
+            document.getElementById('Location').value = "";
+            document.getElementById('JobID').value = "";
+        }
+
+
+
+        function viewPickupList() {
+            const body = document.getElementById('pickupListBody');
+            body.innerHTML = '';
+            if (pickupList.length === 0) {
+                body.innerHTML = '<p>No items in the list.</p>';
+            } else {
+                pickupList.forEach((part, index) => {
+                    body.innerHTML += `
+                            <div class="mb-2 border-bottom pb-2">
+                                <strong>#${index + 1}</strong><br/>
+                                Barcode: ${part.barcode}<br/>
+                                Name (Eng): ${part.partNameEng}<br/>
+                                Name (Thai): ${part.partNameThai}<br/>
+                                Qty: ${part.quantity}<br/>
+                                Location: ${part.location}
+                            </div>
+                        `;
+                });
+            }
+            new bootstrap.Modal(document.getElementById('pickupListModal')).show();
+        }
+
+        function openPickupModal() {
+            if (pickupList.length === 0) {
+                alert('No items to pickup.');
+                return;
+            }
+
+            // เคลียร์ช่อง barcode และเปิด modal
+            document.getElementById('barcodeInput').value = '';
+            let modal = new bootstrap.Modal(document.getElementById('pickupModal'));
+            modal.show();
+        }
+
+        function pickup() {
+            const barcode = document.getElementById('barcodeInput').value || "";
+
+            if (pickupList.length === 0) {
+                alert('No items to pickup.');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/Job/PickupSave',
+                data: JSON.stringify({
+                    pickupList: pickupList,
+                    barcode: barcode
+                }),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message);
+                        pickupList.length = 0;
+                        document.getElementById('pickupListBody').innerHTML = '';
+                        bootstrap.Modal.getInstance(document.getElementById('pickupModal')).hide();
+                    } else {
+                        alert("Pickup failed: " + data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error during pickup:', error);
+                    alert('Failed to pickup.');
+                }
+            });
+        }
+
+    </script>
+}
+
+
+

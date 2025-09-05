@@ -1,0 +1,732 @@
+﻿
+@{
+    ViewData["Title"] = "PickUp";
+    ViewData["activestore"] = "active";
+    ViewData["activepickup"] = "active";
+    ViewData["openStore"] = "menu-open";
+    var user = Context.Session.Get<User_UserBase>("UserLogin");
+}
+
+@using Microsoft.AspNetCore.Http
+@using SonodaSoftware.Models
+@using SonodaSoftware.Data
+@using SonodaSoftware.Services
+@model PartModel
+@{
+    ViewBag.Title = "PickUp";
+    ViewBag.PickUp = "active";
+    var group = ViewData["group"] as List<Store_PartGroup>;
+    var part = ViewData["part"] as List<PartModel>;
+    var list = ViewData["ListPick"] as List<PartModel>;
+}
+<main class="content">
+    <div class="d-flex justify-content-between">
+        <div class="my-4">
+            <form id="SearchForm">
+                <label id="SelectGroupLabel"></label>
+                <input list="GROUP" id="NAME_GROUP" name="group">
+                <datalist id="GROUP" class="mx-4">
+                    <option value="" />
+                    @foreach (var item in group)
+                    {
+                        <option value="@item.NAME_GROUP_EN" />
+                    }
+                </datalist>
+
+                @*<select id="NAME_GROUP" data-live-search="true" name="group" class="mx-4 selectpicker">
+                <option></option>
+                @foreach (var item in group)
+                {
+                <option>@item.NAME_GROUP_EN</option>
+                }
+                </select>*@
+                <label id="barcodelabel" class="mx-3">Search BarCode :  </label>
+                <input id="BarCode" name="BarCode" type="text" aria-label="Recipient's username" aria-describedby="button-addon2">
+            </form>
+        </div>
+        <div class="my-4">
+            <button class="btn btn-outline-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#pickupModal"
+                    onclick="loadPickupData()">
+                View PickUpHistory
+            </button>
+        </div>
+    </div>
+    
+    <div class="row mx-3">
+        <div class="col-md-7 card mx-3" id="dataEng">
+            <div class="card-body">
+                <table id="PartEng" class="table">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th>ID_PRODUCT</th>
+                            <th>NAME_PRODUCT_ENG</th>
+                            <th>NAME_PRODUCT_TH</th>
+                            <th>BALANCE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (part != null)
+                        {
+                            foreach (var item in part)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.ID_PRODUCT</td>
+                                    <td>@item.NAME_PRODUCT_ENG</td>
+                                    <td>@item.NAME_PRODUCT_TH</td>
+                                    <td>@item.QUANTITY</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7 card mx-3" id="dataThai">
+            <div class="card-body">
+                <table id="PartThai" class="table">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th>ไอดีสินค้า</th>
+                            <th>ชื่อสินค้าภาษาอังกฤษ</th>
+                            <th>ชื่อสินค้าภาษาไทย</th>
+                            <th>จำนวนที่เหลือ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (part != null)
+                        {
+                            foreach (var item in part)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.ID_PRODUCT</td>
+                                    <td>@item.NAME_PRODUCT_ENG</td>
+                                    <td>@item.NAME_PRODUCT_TH</td>
+                                    <td>@item.QUANTITY</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-7 card mx-3" id="dataJapan">
+            <div class="card-body">
+                <table id="PartJapan" class="table">
+                    <thead>
+                        <tr>
+                            <th hidden>ID</th>
+                            <th> 商品ID </th>
+                            <th> 英語の商品名 </th>
+                            <th>タイ語の商品名</th>
+                            <th>量数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (part != null)
+                        {
+                            foreach (var item in part)
+                            {
+                                <tr>
+                                    <td hidden>@item.ID</td>
+                                    <td>@item.ID_PRODUCT</td>
+                                    <td>@item.NAME_PRODUCT_ENG</td>
+                                    <td>@item.NAME_PRODUCT_TH</td>
+                                    <td>@item.QUANTITY</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4 card mx-3">
+            <form id="PickUp">
+                <div class="card-body d-block me-3">
+                    <div>
+                        <label class="my-1" id="Idlabel"></label><br />
+                        <input name="Id" id="ID" placeholder="ID" class="mb-3 form-control" readonly /><br />
+                        <label class="my-1" id="ID_ProductLabel"></label><br />
+                        <input name="ID_PRODUCT" id="ID_Product" placeholder="ID_PRODUCT" class="mb-3 form-control" readonly /><br />
+                        <label class="my-1" id="NAME_PRODUCTLabel"></label><br />
+                        <input name="NAME_PRODUCT_ENG" id="NAME_PRODUCT" placeholder="NAME_PRODUCT" class="mb-3 form-control" readonly /><br />
+                        <label class="my-1" id="QUANTITYLabel"></label><br />
+                        <input id="QUANTITY" placeholder="QUANTITY" class="mb-3 form-control" readonly /><br />
+                        <label class="my-1" id="UnitLabel"></label><br />
+                        <input name="QUANTITY" id="Unit" placeholder="Unit" type="number" min="0" class="mb-3 form-control" /><br />
+                    </div>
+                    <div class="text-center">
+                        <button id="SaveData" class="my-3 btn btn-info mx-2"></button>
+                        @*<button class="my-3 btn btn-outline-secondary mx-2">ViewList</button>*@
+                        <!-- Button trigger modal -->
+                        <button id="listButton" type="button" class="my-3 btn btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="PickUplistHeader"></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="PickList" class="table w-100 text-center">
+                                            <thead class="text-start">
+                                                <tr>
+                                                    <th hidden>ID</th>
+                                                    <th id="nameproductinlist">Name</th>
+                                                    <th id="quantityinlist">QUANTITY</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-start">
+                                                @if (list != null)
+                                                {
+                                                    foreach (var item in list)
+                                                    {
+                                                        <tr>
+                                                            <td hidden> @item.ID</td>
+                                                            <td> @item.NAME_PRODUCT_ENG</td>
+                                                            <td> @item.QUANTITY</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="Delete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Delete</button>
+                                        <button id="closelist" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        @*<button id="PickUpButton" class="my-3 btn btn-outline-secondary mx-2">Pick Up</button>*@
+                        <button type="button" class="my-3 btn btn-success mx-2" id="pickUpButton" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="PickUpheader">Please Entry Job and Machine Code</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input id="job" name="job" type="text" class="mb-3 form-control" />
+                                        <input id="Machine" name="Machine" placeholder="Machine Code" type="text" class="mb-3 form-control" />
+                                        @if (user != null)
+                                        {
+                                            SND_DBContext context = new SND_DBContext();
+                                            var useraCCESS = context.User_Accesses.Where(x => x.IDUser == user.BarCode).FirstOrDefault().Store;
+                                            if (useraCCESS != null)
+                                            {
+                                                if (useraCCESS.Contains("Store_Management"))
+                                                {
+                                                    <input name="PickupFor" placeholder="PickupFor(TryBarcode)" maxlength="4"/>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                        <button id="PickUpButton" class="my-3 btn btn-outline-success mx-2"></button>
+                                        <button id="ClosePickUpButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- Modal แสดงรายการ -->
+<div class="modal fade" id="pickupModal" tabindex="-1" aria-labelledby="pickupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">PickUp History (5 Days)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Main PickUp</h6>
+                <table class="table table-bordered" id="mainTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Job</th>
+                            <th>Machine</th>
+                            <th>By</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <h6>PickUp Details</h6>
+                <table class="table table-sm table-hover" id="detailTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>PickUpID</th>
+                            <th>Product</th>
+                            <th>Name TH</th>
+                            <th>Qty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        if ('@TempData["message"]' != "") {
+            alert('@TempData["message"]');
+        }
+        var table = new DataTable('#PartEng', {
+            scrollX: true,
+            autoWidth: false,
+            "columnDefs": [
+                { "className": "dt-left", "targets": "_all" }
+            ],
+        });
+        var tableThai = new DataTable('#PartThai', {
+            scrollX: true,
+            autoWidth: false,
+            "columnDefs": [
+                { "className": "dt-left", "targets": "_all" }
+            ],
+            "language": {
+                "sProcessing": "กำลังดำเนินการ...",
+                "sLengthMenu": "แสดง_MENU_ แถว",
+                "sZeroRecords": "ไม่พบข้อมูล",
+                "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sInfoPostFix": "",
+                "sSearch": "ค้นหา:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "เริ่มต้น",
+                    "sPrevious": "ก่อนหน้า",
+                    "sNext": "ถัดไป",
+                    "sLast": "สุดท้าย"
+                }
+            }
+        });
+        var tableJapan = new DataTable('#PartJapan', {
+            scrollX: true,
+            autoWidth: false,
+            "columnDefs": [
+                { "className": "dt-left", "targets": "_all" }
+            ],
+            "language": {
+                "sProcessing": "処理中...",
+                "sLengthMenu": "ショー_MENU_ ライン",
+                "sZeroRecords": "ご指定の検索条件に該当する商品はみつかりませんでした",
+                "sInfo": "_START_ 行中  _END_ から  _TOTAL_ までを表示",
+                "sInfoEmpty": "0 件中 0 〜 0 件表示",
+                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sInfoPostFix": "",
+                "sSearch": "検索ボックス:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "เริ่มต้น",
+                    "sPrevious": "前のページ",
+                    "sNext": "次のページ",
+                    "sLast": "สุดท้าย"
+                }
+            }
+        });
+        var PickList = new DataTable('#PickList');
+        var alertUnit = "";
+        var AlertTryJob = "";
+        //changeLanguage
+        var languageSettings;
+        var language = sessionStorage.getItem("language");
+        if (language != null) {
+            changelanguage(language);
+        }
+        else {
+            changelanguage('English');
+        }
+        function changelanguage(lang) {
+            //Thai
+            if (lang == 'Thai') {
+                $("#Logout").html('ออกจากระบบ');
+                $("#PartSearchPage").html('ค้นหาสินค้า');
+                $("#PickUpPage").html('เบิกสินค้า');
+                $("#ViewHistoryPage").html('ประวัติการเบิก');
+                $("#SelectGroupLabel").html('เลือกกลุ่ม');
+                $("#barcodelabel").html('ค้นหาโดยบาร์โค๊ด :  ');
+                $("#BarCode").attr("placeholder", 'บาร์โค๊ดสินค้า');
+                $("#ID").attr("placeholder", 'ไอดี');
+                $("#ID_Product").attr("placeholder", 'ไอดีสินค้า');
+                $("#NAME_PRODUCT").attr("placeholder", 'ชื่อสินค้า');
+                $("#QUANTITY").attr("placeholder", 'จำนวนที่เหลือ');
+                $("#Unit").attr("placeholder", 'จำนวน');
+                $("#Idlabel").html('ไอดี');
+                $("#ID_ProductLabel").html('ไอดีสินค้า');
+                $("#NAME_PRODUCTLabel").html('ชื่อสินค้า');
+                $("#QUANTITYLabel").html('จำนวนที่เหลือ');
+                $("#UnitLabel").html('จำนวน');
+                $("#SaveData").html("เพิ่มสินค้า");
+                $("#listButton").html("ดูรายการ");
+                $("#pickUpButton").html("เบิกสินค้า");
+                alertUnit = "กรุณาใส่จำนวน";
+                $("#PickUplistHeader").html("รายการเบิก");
+                $("#Delete").html("ลบ");
+                $("#closelist").html("ปิด");
+                $("#PickUpheader").html("ชื่องานและรหัสเครื่องจักร");
+                $("#PickUpButton").html("เบิกสินค้า");
+                $("#ClosePickUpButton").html("ปิด");
+                $("#job").attr("placeholder", 'ชื่องาน');
+                $("#Machine").attr("placeholder", 'รหัสเครื่องจักร');
+                AlertTryJob = "กรุณาใส่ชื่องานและรหัสเครื่องจักร";
+                $("#dataEng").hide();
+                $("#dataThai").show();
+                $("#dataJapan").hide();
+                languageSettings = {
+                    sProcessing: "กำลังดำเนินการ...",
+                    sLengthMenu: "แสดง _MENU_ แถว",
+                    sZeroRecords: "ไม่พบข้อมูล",
+                    sInfo: "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                    sInfoEmpty: "แสดง 0 ถึง 0 จาก 0 แถว",
+                    sInfoFiltered: "(กรองข้อมูล _MAX_ ทุกแถว)",
+                    sSearch: "ค้นหา:",
+                    oPaginate: {
+                        sFirst: "เริ่มต้น",
+                        sPrevious: "ก่อนหน้า",
+                        sNext: "ถัดไป",
+                        sLast: "สุดท้าย"
+                    }
+                };
+                $("#nameproductinlist").html("ชื่อสินค้า");
+                $("#quantityinlist").html("จำนวน");
+            }
+            //English
+            else if (lang == 'English') {
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('Part Search');
+                $("#PickUpPage").html('Pick Up Item');
+                $("#ViewHistoryPage").html('View History');
+                $("#SelectGroupLabel").html('Select Group');
+                $("#barcodelabel").html('Search BarCode :  ');
+                $("#BarCode").attr("placeholder", 'BarCode');
+                $("#ID").attr("placeholder", 'ID');
+                $("#ID_Product").attr("placeholder", 'ID_PRODUCT');
+                $("#NAME_PRODUCT").attr("placeholder", 'NAME_PRODUCT');
+                $("#QUANTITY").attr("placeholder", 'BALANCE');
+                $("#Unit").attr("placeholder", 'QUANTITY');
+                $("#Idlabel").html('ID');
+                $("#ID_ProductLabel").html('ID_PRODUCT');
+                $("#NAME_PRODUCTLabel").html('NAME_PRODUCT');
+                $("#QUANTITYLabel").html('BALANCE');
+                $("#UnitLabel").html('QUANTITY');
+                $("#SaveData").html("AddToPickUp");
+                $("#listButton").html("ViewList");
+                $("#pickUpButton").html("Pick Up");
+                alertUnit = "Please try QUANTITY";
+                $("#PickUplistHeader").html("Pick Up List");
+                $("#Delete").html("Delete");
+                $("#closelist").html("Close");
+                $("#PickUpheader").html("Please Entry Job and Machine Code");
+                $("#PickUpButton").html("Pick Up");
+                $("#ClosePickUpButton").html("Close");
+                $("#job").attr("placeholder", 'Job');
+                $("#Machine").attr("placeholder", 'Machine Code');
+                AlertTryJob = "Job and Machine Code";
+                $("#dataThai").hide();
+                $("#dataEng").show();
+                $("#dataJapan").hide();
+                languageSettings = {
+                    sProcessing: "Processing...",
+                    sLengthMenu: "Show _MENU_ entries",
+                    sZeroRecords: "No records found",
+                    sInfo: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    sInfoEmpty: "Showing 0 to 0 of 0 entries",
+                    sInfoFiltered: "(filtered from _MAX_ total entries)",
+                    sSearch: "Search:",
+                    oPaginate: {
+                        sFirst: "First",
+                        sPrevious: "Previous",
+                        sNext: "Next",
+                        sLast: "Last"
+                    }
+                };
+                $("#nameproductinlist").html("Name");
+                $("#quantityinlist").html("QUANTITY");
+            }
+            //Japanese
+            else if (lang == 'Japanese') {
+                $("#Logout").html('Log out');
+                $("#PartSearchPage").html('パーツ検索');
+                $("#PickUpPage").html('ピックアップ');
+                $("#ViewHistoryPage").html('ピックアップ履歴');
+                $("#SelectGroupLabel").html('グループを選択');
+                $("#barcodelabel").html('バーコードで検索 :  ');
+                $("#BarCode").attr("placeholder", '商品バーコード');
+                $("#ID").attr("placeholder", 'ID');
+                $("#ID_Product").attr("placeholder", '商品ID');
+                $("#NAME_PRODUCT").attr("placeholder", '商品名');
+                $("#QUANTITY").attr("placeholder", '数量');
+                $("#Unit").attr("placeholder", '量');
+                $("#Idlabel").html('ID');
+                $("#ID_ProductLabel").html('商品ID');
+                $("#NAME_PRODUCTLabel").html('商品名');
+                $("#QUANTITYLabel").html('数量');
+                $("#UnitLabel").html('量');
+                $("#SaveData").html("商品追加");
+                $("#listButton").html("リスト表示");
+                $("#pickUpButton").html("ピックアップ");
+                alertUnit = "再度、ユニットを入力してください。";
+                $("#PickUplistHeader").html("ピックアップリスト");
+                $("#Delete").html("削除");
+                $("#closelist").html("切る");
+                $("#PickUpheader").html("ジョブとマシンコード");
+                $("#PickUpButton").html("ピックアップ");
+                $("#ClosePickUpButton").html("切る");
+                $("#job").attr("placeholder", 'ジョブ名');
+                $("#Machine").attr("placeholder", 'マシンコード');
+                AlertTryJob = "ジョブとマシンコードを入力してください";
+                $("#dataThai").hide();
+                $("#dataEng").hide();
+                $("#dataJapan").show();
+                languageSettings = {
+                    "sProcessing": "処理中...",
+                    "sLengthMenu": "ショー_MENU_ ライン",
+                    "sZeroRecords": "ご指定の検索条件に該当する商品はみつかりませんでした",
+                    "sInfo": "_START_ 行中  _END_ から  _TOTAL_ までを表示",
+                    "sInfoEmpty": "0 件中 0 〜 0 件表示",
+                    "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                    "sInfoPostFix": "",
+                    "sSearch": "検索ボックス:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "เริ่มต้น",
+                        "sPrevious": "前のページ",
+                        "sNext": "次のページ",
+                        "sLast": "สุดท้าย"
+                    }
+                };
+                $("#nameproductinlist").html("商品名");
+                $("#quantityinlist").html("数量");
+            }
+            PickList.settings()[0].oLanguage = $.extend(true, PickList.settings()[0].oLanguage, languageSettings);
+            PickList.draw();
+            sessionStorage.removeItem("language");
+            sessionStorage.setItem("language", lang);
+        }
+        //selectgroup
+        var group = sessionStorage.getItem("group");
+        $("#NAME_GROUP option").each(function () {
+            if ($(this).text() == group)
+                $(this).attr("selected", "selected");
+        });
+        $("#NAME_GROUP").change(function () {
+            sessionStorage.setItem("group", $(this).find(":selected").text())
+            $("#SearchForm").attr('action', '/Store/pickUpResult');
+            $("#SearchForm").submit();
+        });
+        //$("#NAME_GROUP").on('change', 'input', function () {
+        //    sessionStorage.setItem("group", $(this).find(":selected").text())
+        //    $("#SearchForm").attr('action', '/home/pickUpResult');
+        //    $("#SearchForm").submit();
+        //});
+        //Table
+        $('#PartEng tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            $("#ID").val($(this).find('td:first-child').html());
+            $("#ID_Product").val($(this).find('td:nth-child(2)').html());
+            $("#NAME_PRODUCT").val($(this).find('td:nth-child(3)').html());
+            $("#QUANTITY").val($(this).find('td:nth-child(5)').html());
+            $("#Unit").attr({
+                "max": $(this).find('td:nth-child(5)').html()
+            });
+        });
+        $('#PartThai tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                tableThai.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            $("#ID").val($(this).find('td:first-child').html());
+            $("#ID_Product").val($(this).find('td:nth-child(2)').html());
+            $("#NAME_PRODUCT").val($(this).find('td:nth-child(3)').html());
+            $("#QUANTITY").val($(this).find('td:nth-child(5)').html());
+            $("#Unit").attr({
+                "max": $(this).find('td:nth-child(5)').html()
+            });
+        });
+        $('#PartJapan tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                tableJapan.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            $("#ID").val($(this).find('td:first-child').html());
+            $("#ID_Product").val($(this).find('td:nth-child(2)').html());
+            $("#NAME_PRODUCT").val($(this).find('td:nth-child(3)').html());
+            $("#QUANTITY").val($(this).find('td:nth-child(5)').html());
+            $("#Unit").attr({
+                "max": $(this).find('td:nth-child(5)').html()
+            });
+        });
+        //deletefield
+        var ID = "";
+        PickList.columns.adjust()
+        $(".dataTables_wrapper").css("width", "100%");
+        $('#PickList tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                PickList.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            ID = $(this).find('td:first-child').html();
+        });
+        $("#Delete").click(function () {
+            $.post("/home/Remove", { id: ID }).done(function (data) {
+                PickList.rows('.selected').remove().draw();
+            });
+        });
+        //searchbarcode
+        $("#BarCode").change(function () {
+            sessionStorage.removeItem("group");
+            $("#SearchForm").attr('action', '/Store/BarCodePickUp');
+            $("#SearchForm").submit();
+        });
+        $("#SaveData").click(function () {
+            var check = $("#Unit").val();
+            if (check != "") {
+                $("#PickUp").attr('action', '/Store/addPickUplist');
+                $("#PickUp").submit();
+            }
+            else {
+                alert(alertUnit);
+            }
+        });
+        $("#PickUpButton").click(function () {
+            var job = $("#job").val();
+            var Machine = $("#Machine").val();
+            if (job != "" && Machine!= "") {
+                $("#PickUp").attr('action', '/Store/PickUpSave');
+                $("#PickUp").submit();
+            }
+            else {
+                alert(AlertTryJob);
+            }
+        });
+        if ('@ViewData["message"]' != "") {
+            if (language == "Thai") {
+                if ('@ViewData["message"]' == "Success") {
+                    alert('บันทึกสำเร็จ');
+                }
+                else {
+                    alert('บันทึกไม่สำเร็จ');
+                }
+            } else {
+                alert('@ViewData["message"]');
+            }
+        }
+        if ('@ViewData["addPickUp"]' != "") {
+            if (language == "Thai") {
+                alert('ยอดคงเหลือต่ำกว่าเบิก กรุณาตรวจสอบและใส่จำนวนอีกครั้ง');
+            } 
+            else if (language == "Japanese") {
+                alert('在庫数がピックアップ数量より少ないので 数量を再度確認して入力してください。');
+                }
+else {
+    alert('@ViewData["addPickUp"]');
+}
+
+
+}
+
+
+        function loadPickupData() {
+            $.ajax({
+                url: '/store/GetPickupHistory',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const mainTable = $('#mainTable tbody');
+                    const detailTable = $('#detailTable tbody');
+
+                    mainTable.empty();
+                    detailTable.empty();
+
+                    data.main.forEach(item => {
+                        mainTable.append(`
+                          <tr>
+                            <td>${item.id}</td><td>${item.date}</td><td>${item.job}</td>
+                            <td>${item.machineCode}</td><td>${item.pickUpBy}</td><td>${item.total}</td>
+                          </tr>`);
+                    });
+
+                    data.detail.forEach(item => {
+                        detailTable.append(`
+                          <tr>
+                            <td>${item.id}</td><td>${item.pickUpID}</td><td>${item.productID}</td>
+                            <td>${item.nameTH}</td><td>${item.quantity}</td>
+                            <td>
+                              <button class="btn btn-sm btn-danger"
+                                  onclick="cancelPickupDetail('${item.id}', '${item.pickUpID}', '${item.productID}', '${item.quantity}')">
+                                Cancel Pickup
+                              </button>
+                            </td>
+                          </tr>`);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert('ไม่สามารถโหลดข้อมูลได้');
+                }
+            });
+        }
+
+
+        function cancelPickupDetail(id, pickUpId, productId, quantity) {
+            if (!confirm("แน่ใจว่าต้องการยกเลิกรายการนี้?")) return;
+
+            $.ajax({
+                url: '/store/CancelPickup',
+                method: 'POST',
+                data: JSON.stringify({ id, pickUpId, productId, quantity }),
+                contentType: 'application/json',
+                success: function () {
+                    alert('ยกเลิกสำเร็จ');
+                    loadPickupData();
+                },
+                error: function () {
+                    alert('ยกเลิกไม่สำเร็จ');
+                }
+            });
+        }
+
+    </script>
+}
+
